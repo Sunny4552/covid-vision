@@ -14,9 +14,9 @@ public class Address {
 	 * @param zipCode The zip code the user is living in.
 	 */
 	public Address (String streetAddr, String city, String state, int zipCode) {
-		this.streetAddr = streetAddr;
-		this.city = city;
-		this.state = state;
+		this.streetAddr = streetAddr.toUpperCase();
+		this.city = city.toUpperCase();
+		this.state = state.toUpperCase();
 		this.zipCode = zipCode;
 	}
 	
@@ -27,6 +27,6 @@ public class Address {
 	@Override
 	public String toString() {
 		//concatenate all instance fields of address together
-		return streetAddr + " ," + city + " ," + state + " ," + zipCode;
+		return streetAddr + ", " + city + ", " + state + " " + zipCode;
 	}
 }

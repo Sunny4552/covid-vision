@@ -67,10 +67,10 @@ public class ExposureTracker {
 	 * Add all of the user's information to the database.
 	 * @param information The user's information.
 	 */
-	public void createNewUser(String information, String testStatus, String interactions) {
-		//calls writeUser() from UserDb
+	public void createNewUser(User user, String testStatus, String interactions) {
+		//calls writeNewUser() from UserDb
 		
-		database.writeUser(information, testStatus, interactions);
+		database.writeNewUser(user, testStatus, interactions);
 	}
 	
 	/**
@@ -79,10 +79,10 @@ public class ExposureTracker {
 	 * @return The user's Covid status.
 	 */
 	public String getCovidStatus(User user) {
-		return database.readCovidStatus(user);
+		return database.readTestStatus(user);
 	}
 	
-	public ArrayList<String> getUserInteraction(User user) {
+	public String[] getUserInteractions(User user) {
 		return database.readInteractions(user);
 	}
 	
@@ -96,21 +96,21 @@ public class ExposureTracker {
 	}
 	
 	/**
-	 * Adds interactions to the user's list of interactions to the database.
+	 * Adds interactions to the user's current list of interactions in the database.
 	 * @param interactions The list of people who the user has interacted with.
 	 */
 	public void addInteractions (User user, String interactions) {
-		
+		database.writeInteractions(user, interactions);
 	}
 	
 	/**
-	 * Sets the user's Covid status in the database.
-	 * @param user The user whose Covid status will be updated.
-	 * @param status The user's Covid status.
+	 * Sets the user's Covid test status in the database.
+	 * @param user The user whose Covid test status will be updated.
+	 * @param status The user's Covid test status.
 	 */
-	public void setCovidStatus(User user, String status) {
+	public void updateTestStatus(User user, String status) {
 		//The status can either be negative, positive, or not tested.
-		database.writeStatus (user, status);
+		database.writeTestStatus (user, status);
 	}
 	
 
