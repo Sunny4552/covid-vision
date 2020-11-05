@@ -20,6 +20,20 @@ public class Address {
 		this.zipCode = zipCode;
 	}
 	
+	/**
+	 * Constructs an Address with a given string parsed into street address, city, state, and zip code.
+	 * @param addressString
+	 */
+	public Address (String addressString) {
+		String[] addressComponents = addressString.split(", "); //first element is street, second element is city, third element is state concatenated with zip code
+		String[] stateAndZipcode = addressComponents[2].split(" "); //first element is state, second element is zip code
+		
+		this.streetAddr = addressComponents[0].toUpperCase();
+		this.city = addressComponents[1].toUpperCase();
+		this.state = stateAndZipcode[0].toUpperCase();
+		this.zipCode = Integer.parseInt(stateAndZipcode[1]);
+	}
+	
 	
 	/**
 	 * Returns the address as a string
