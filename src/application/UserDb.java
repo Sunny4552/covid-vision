@@ -1,27 +1,21 @@
 package application;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
-public class UserDb {
-	File databaseFile;
-	List<String> databaseLines;
-	//NOTE: Database will be in the form
+//NOTE: Database will be in the form
 	//FirstName LastName|Street Address City State ZipCode|Age
 	//Test Status
 	//Exposure Status
 	//Interaction#1|Interaction#2-Interaction#3| …… 
 
-	
+public class UserDb {
+	File databaseFile;
+	List<String> databaseLines;
+
 	/**
 	 * Constructs a user database with a given file path
 	 * @param filePath
@@ -49,11 +43,10 @@ public class UserDb {
 		return true;
 	}
 	
-	
 	/**
 	 * Add a new user to the database.
 	 * @param information The user's name, address, and age.
-	 * @param testStatus The user's Covid status.
+	 * @param testStatus The user's Covid test status.
 	 * @param interactions The user's interactions.
 	 */
 	public void writeNewUser(User user, String testStatus, String interactions) {
@@ -80,9 +73,9 @@ public class UserDb {
 		}
 	}
 	
-	
 	/**
 	 * Adds new interactions to the user's record.
+	 * @param user The user whose interactions will be updated.
 	 * @param interactions The names of people to be added to the user's current interactions list.
 	 */
 	public void writeInteractions(User user, String interactions) {
@@ -91,22 +84,22 @@ public class UserDb {
 		databaseLines.set(interactionsLineNum, currentLine+interactions.toUpperCase()+"|");
 		writeToDatabaseFile();
 	}
-	
+
 	/**
-	 * Updates the user's Covid status in the database.
-	 * @param status the user's Covid status
+	 * Updates the user's Covid test status in the database.
+	 * @param user The user whose test status will be updated.
+	 * @param status The user's Covid test status. 
 	 */
 	public void writeTestStatus(User user, String status) {
-		int userLineNum = findUser (user);
-		int testStatLine = userLineNum + 1;
-		databaseLines.set(testStatLine, status);
+		int testStatLine = getTestStatLineNum(user);
+		databaseLines.set(testStatLine, status.toUpperCase());
 		writeToDatabaseFile();
 	}
 	
 	/**
 	 * Returns the list of names from the user's interaction list.
-	 * @param user The user
-	 * @return The list of names from the user's interaction list
+	 * @param user The user whose interactions will be returned.
+	 * @return A string array of the of names from the user's interaction list.
 	 */
 	public String[] readInteractions(User user) {
 		
@@ -123,8 +116,7 @@ public class UserDb {
 	 * @param user The user whose test status will be returned. 
 	 */
 	public String readTestStatus(User user) {
-		int userLineNum = findUser (user);
-		int testStatLine = userLineNum + 1;
+		int testStatLine = getTestStatLineNum(user);
 		return databaseLines.get(testStatLine);
 	}
 	
@@ -152,8 +144,9 @@ public class UserDb {
 		try {
 			FileWriter fw = new FileWriter (databaseFile);
 
-            for (String s: databaseLines) {
-                fw.write(s + "\n");
+			//loop through array and print line onto file
+            for (String line: databaseLines) {
+                fw.write(line + "\n");
             }
             fw.close();
 		}
@@ -163,18 +156,33 @@ public class UserDb {
 		
 	}
 	
+	/**
+	 * Gets the line number in database file where the user's test status is written.
+	 * @param user The user whose test status line number will be returned.
+	 * @return The line number in database file where the user's test status is written.
+	 */
 	public int getTestStatLineNum (User user) {
 		//Retrieve test status line number
 		//interactions line is the 2nd line in a user record
 		return findUser (user) + 1;
 	}
 	
+	/**
+	 * Gets the line number in database file where the user's exposure status is written.
+	 * @param user The user whose exposure status line number will be returned.
+	 * @return The line number in database file where the user's exposure status is written.
+	 */
 	public int getExposureStatLineNum (User user) {
 		//Retrieve test status line number
 		//interactions line is the 2nd line in a user record
 		return findUser (user) + 2;
 	}
 	
+	/**
+	 * Gets the line number in database file where the user's interactions are written.
+	 * @param user The user whose interactions line number will be returned.
+	 * @return The line number in database file where the user's interactions are written.
+	 */
 	public int getInteractionsLineNum (User user) {
 		//Retrieve interactions line number
 		//interactions line is the 3rd line in a user record

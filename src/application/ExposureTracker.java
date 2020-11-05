@@ -74,11 +74,11 @@ public class ExposureTracker {
 	}
 	
 	/**
-	 * Gets the user's Covid status .
-	 * @param user The user that the system will be checking Covid status for.
-	 * @return The user's Covid status.
+	 * Gets the user's Covid test status .
+	 * @param user The user that the system will be checking Covid test status for.
+	 * @return The user's Covid test status.
 	 */
-	public String getCovidStatus(User user) {
+	public String getTestStatus(User user) {
 		return database.readTestStatus(user);
 	}
 	
@@ -115,8 +115,8 @@ public class ExposureTracker {
 	
 
 	/**
-	 * 
-	 * @param user
+	 * Update the exposure status of all the people on the interactions list.
+	 * @param user The user whose interactions' exposure status will be updated.
 	 */
 	public void updateInteractionsExposure(User user) {
 		//Gets list of all user's interactions
