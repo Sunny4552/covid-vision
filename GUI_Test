@@ -1,0 +1,482 @@
+package sample;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.text.*;
+import javafx.stage.Stage;
+
+public class Main extends Application {
+
+    // stage
+    Stage stage;
+
+    // scenes
+    Scene sceneHome;
+    Scene sceneRegister1;
+    Scene sceneRegister2;
+    Scene sceneLogin;
+    Scene sceneLoggedIn;
+
+    // pane
+    private Pane homePane;
+    private Pane registerPane1;
+    private Pane registerPane2;
+    private Pane loginPane;
+    private Pane loggedInPane;
+    private Pane updatePane;
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+        // set stage
+        stage = primaryStage;
+
+        // set panes
+        homePane = createHomePane();
+        registerPane1 = createRegisterPane1();
+        registerPane2 = createRegisterPane2();
+        loginPane = createLoginPane();
+        loggedInPane = createLoggedInPane();
+
+        // set scenes
+        sceneHome = new Scene(homePane, 750, 500);
+        sceneRegister1 = new Scene(registerPane1, 750, 500);
+        sceneRegister2 = new Scene(registerPane2, 750, 500);
+        sceneLogin = new Scene(loginPane, 750, 500);
+        sceneLoggedIn = new Scene(loggedInPane, 750, 500);
+
+        // start out at homepage
+        primaryStage.setTitle("20/20 Covid Vision");
+        primaryStage.setScene(sceneHome);
+        primaryStage.show();
+
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public VBox createHomePane() {
+
+        VBox pane = new VBox();
+        pane.setAlignment(Pos.CENTER);
+
+        Text title = new Text("20/20 COVID VISION");
+        title.setFont(Font.font(48));
+
+        HBox buttonContainer = new HBox();
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.setSpacing(5);
+
+        Button btnRegister = new Button("Register");
+        btnRegister.setFont(Font.font(18));
+        btnRegister.setOnMouseClicked(e -> {goRegister();});
+
+        Button btnLogin = new Button("Login");
+        btnLogin.setFont(Font.font(18));
+        btnLogin.setOnMouseClicked(e -> {goLogin();});
+
+        buttonContainer.getChildren().addAll(btnRegister, btnLogin);
+
+        pane.getChildren().addAll(title, buttonContainer);
+
+        return pane;
+
+    }
+
+    public HBox createRegisterPane1() {
+
+        // the overarching hbox container for this page
+        HBox pane = new HBox();
+        pane.setAlignment(Pos.CENTER);
+        pane.setSpacing(50);
+
+        // the "title" of this page
+        Text register = new Text("REGISTER");
+        register.setFont(Font.font(48));
+        register.setTextAlignment(TextAlignment.RIGHT);
+
+        // a grid pane to contain labels and text fields
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        Label lblName = new Label("Name");
+        lblName.setFont(Font.font(16));
+        GridPane.setHalignment(lblName, HPos.RIGHT);
+        grid.add(lblName, 0, 0);
+
+        Label lblAddress = new Label("Address");
+        lblAddress.setFont(Font.font(16));
+        GridPane.setHalignment(lblAddress, HPos.RIGHT);
+        grid.add(lblAddress, 0, 1);
+
+        Label lblCity = new Label("City");
+        lblCity.setFont(Font.font(16));
+        GridPane.setHalignment(lblCity, HPos.RIGHT);
+        grid.add(lblCity, 0, 2);
+
+        Label lblState = new Label("State");
+        lblState.setFont(Font.font(16));
+        GridPane.setHalignment(lblState, HPos.RIGHT);
+        grid.add(lblState, 0, 3);
+
+        Label lblZip = new Label("Zip Code");
+        lblZip.setFont(Font.font(16));
+        GridPane.setHalignment(lblZip, HPos.RIGHT);
+        grid.add(lblZip, 0, 4);
+
+        TextField tfName = new TextField();
+        tfName.setFont(Font.font(16));
+        tfName.setPromptText("Enter name.");
+        grid.add(tfName, 1, 0);
+
+        TextField tfAddress = new TextField();
+        tfAddress.setFont(Font.font(16));
+        tfAddress.setPromptText("Enter address.");
+        grid.add(tfAddress, 1, 1);
+
+        TextField tfCity = new TextField();
+        tfCity.setFont(Font.font(16));
+        tfCity.setPromptText("Enter city.");
+        grid.add(tfCity, 1, 2);
+
+        TextField tfState = new TextField();
+        tfState.setFont(Font.font(16));
+        tfState.setPromptText("Enter state.");
+        grid.add(tfState, 1, 3);
+
+        TextField tfZip = new TextField();
+        tfZip.setFont(Font.font(16));
+        tfZip.setPromptText("Enter zip code.");
+        grid.add(tfZip, 1, 4);
+
+        // an hbox to contain the buttons
+        HBox buttonContainer = new HBox();
+        buttonContainer.setAlignment(Pos.TOP_RIGHT);
+        buttonContainer.setSpacing(5);
+
+        Button btnReturnToMain = new Button("Return to Main Menu");
+        btnReturnToMain.setFont(Font.font(16));
+        btnReturnToMain.setOnMouseClicked(e -> {goMainMenu();});
+
+        Button btnNext = new Button("Next");
+        btnNext.setFont(Font.font(16));
+        btnNext.setOnMouseClicked(e -> {goNext();});
+
+        buttonContainer.getChildren().addAll(btnReturnToMain, btnNext);
+
+        // a vbox to contain grid and buttonContainer
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(10);
+        vBox.getChildren().addAll(grid, buttonContainer);
+
+        pane.getChildren().addAll(register, vBox);
+
+        return pane;
+
+    }
+
+    public HBox createRegisterPane2() {
+
+        // the overarching hbox container for this page
+        HBox pane = new HBox();
+        pane.setAlignment(Pos.CENTER);
+        pane.setSpacing(50);
+
+        // the "title" of this page
+        Text register = new Text("REGISTER");
+        register.setFont(Font.font(48));
+        register.setTextAlignment(TextAlignment.RIGHT);
+
+        // a grid pane to contain labels and text fields
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        // labels
+        Label lblAge = new Label("Age");
+        lblAge.setFont(Font.font(16));
+        GridPane.setHalignment(lblAge, HPos.RIGHT);
+        grid.add(lblAge, 0, 0);
+
+        Label lblStatus = new Label("COVID-19 Status");
+        lblStatus.setFont(Font.font(16));
+        GridPane.setHalignment(lblStatus, HPos.RIGHT);
+        grid.add(lblStatus, 0, 1);
+
+        Label lblInteractions = new Label("Interactions");
+        lblInteractions.setFont(Font.font(16));
+        GridPane.setHalignment(lblInteractions, HPos.RIGHT);
+        grid.add(lblInteractions, 0, 2);
+
+        // text fields
+        TextField tfAge = new TextField();
+        tfAge.setFont(Font.font(16));
+        tfAge.setPromptText("Enter age.");
+        grid.add(tfAge, 1, 0);
+
+        MenuButton chooseStatus = new MenuButton();
+        chooseStatus.setFont(Font.font(16));
+        chooseStatus.setText("Choose status...");
+        chooseStatus.setPrefWidth(tfAge.getMaxWidth());
+
+        MenuItem notTested = new MenuItem("Not tested");
+        MenuItem testPos = new MenuItem("Tested positive");
+        MenuItem testNeg = new MenuItem("Tested negative");
+
+        // need to do action for changing text upon selecting an item
+
+        chooseStatus.getItems().addAll(notTested, testNeg, testPos);
+        grid.add(chooseStatus, 1, 1);
+
+        TextField tfInteractions = new TextField();
+        tfInteractions.setFont(Font.font(16));
+        tfInteractions.setPromptText("Name1, Name2, ...");
+        grid.add(tfInteractions, 1, 2);
+
+        // an hbox to contain the buttons
+        HBox buttonContainer = new HBox();
+        buttonContainer.setAlignment(Pos.TOP_RIGHT);
+        buttonContainer.setSpacing(5);
+
+        Button btnBack = new Button("Back");
+        btnBack.setFont(Font.font(16));
+        btnBack.setOnMouseClicked(e -> {goRegister();});
+
+        Button btnSubmit = new Button("Submit");
+        btnSubmit.setFont(Font.font(16));
+        btnSubmit.setOnMouseClicked(e -> {goLoggedIn();});
+
+        buttonContainer.getChildren().addAll(btnBack, btnSubmit);
+
+        // a vbox to contain grid and buttonContainer
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(10);
+        vBox.getChildren().addAll(grid, buttonContainer);
+
+        pane.getChildren().addAll(register, vBox);
+
+        return pane;
+
+    }
+
+    public HBox createLoginPane() {
+
+        // the overarching hbox container for this page
+        HBox pane = new HBox();
+        pane.setAlignment(Pos.CENTER);
+        pane.setSpacing(50);
+
+        // the "title" of this page
+        Text login = new Text("LOGIN");
+        login.setFont(Font.font(48));
+        login.setTextAlignment(TextAlignment.RIGHT);
+
+        // a grid pane to contain labels and text fields
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        Label lblName = new Label("Name");
+        lblName.setFont(Font.font(16));
+        GridPane.setHalignment(lblName, HPos.RIGHT);
+        grid.add(lblName, 0, 0);
+
+        Label lblAddress = new Label("Address");
+        lblAddress.setFont(Font.font(16));
+        GridPane.setHalignment(lblAddress, HPos.RIGHT);
+        grid.add(lblAddress, 0, 1);
+
+        Label lblCity = new Label("City");
+        lblCity.setFont(Font.font(16));
+        GridPane.setHalignment(lblCity, HPos.RIGHT);
+        grid.add(lblCity, 0, 2);
+
+        Label lblState = new Label("State");
+        lblState.setFont(Font.font(16));
+        GridPane.setHalignment(lblState, HPos.RIGHT);
+        grid.add(lblState, 0, 3);
+
+        Label lblZip = new Label("Zip Code");
+        lblZip.setFont(Font.font(16));
+        GridPane.setHalignment(lblZip, HPos.RIGHT);
+        grid.add(lblZip, 0, 4);
+
+        TextField tfName = new TextField();
+        tfName.setFont(Font.font(16));
+        tfName.setPromptText("Enter name.");
+        grid.add(tfName, 1, 0);
+
+        TextField tfAddress = new TextField();
+        tfAddress.setFont(Font.font(16));
+        tfAddress.setPromptText("Enter address.");
+        grid.add(tfAddress, 1, 1);
+
+        TextField tfCity = new TextField();
+        tfCity.setFont(Font.font(16));
+        tfCity.setPromptText("Enter city.");
+        grid.add(tfCity, 1, 2);
+
+        TextField tfState = new TextField();
+        tfState.setFont(Font.font(16));
+        tfState.setPromptText("Enter state.");
+        grid.add(tfState, 1, 3);
+
+        TextField tfZip = new TextField();
+        tfZip.setFont(Font.font(16));
+        tfZip.setPromptText("Enter zip code.");
+        grid.add(tfZip, 1, 4);
+
+        // an hbox to contain the buttons
+        HBox buttonContainer = new HBox();
+        buttonContainer.setAlignment(Pos.TOP_RIGHT);
+        buttonContainer.setSpacing(5);
+
+        Button btnReturnToMain = new Button("Return to Main Menu");
+        btnReturnToMain.setFont(Font.font(16));
+        btnReturnToMain.setOnMouseClicked(e -> {goMainMenu();});
+
+        Button btnLogin = new Button("Login");
+        btnLogin.setFont(Font.font(16));
+        btnLogin.setOnMouseClicked(e -> {goLoggedIn();});
+
+        buttonContainer.getChildren().addAll(btnReturnToMain, btnLogin);
+
+        // a vbox to contain grid and buttonContainer
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(10);
+        vBox.getChildren().addAll(grid, buttonContainer);
+
+        pane.getChildren().addAll(login, vBox);
+
+        return pane;
+
+    }
+
+    public BorderPane createLoggedInPane() {
+
+        BorderPane pane = new BorderPane();
+
+        // hbox for top buttons
+        HBox hBoxTop = new HBox();
+        hBoxTop.setAlignment(Pos.CENTER);
+        hBoxTop.setSpacing(5);
+        hBoxTop.setPadding(new Insets(20, 0, 0, 0));
+
+        Button btnUpdateStatus = new Button("Update COVID-19 Status/Interactions");
+        btnUpdateStatus.setFont(Font.font(16));
+        btnUpdateStatus.setOnMouseClicked(e -> {});
+
+        Button btnCheckStatus = new Button("Check COVID-19 Exposure Status");
+        btnCheckStatus.setFont(Font.font(16));
+        btnCheckStatus.setOnMouseClicked(e -> {});
+
+        hBoxTop.getChildren().addAll(btnUpdateStatus, btnCheckStatus);
+
+        pane.setTop(hBoxTop);
+
+        // default message for the center
+        VBox defaultMessage = new VBox();
+        defaultMessage.setAlignment(Pos.TOP_CENTER);
+        defaultMessage.setSpacing(20);
+        defaultMessage.setPadding(new Insets(50, 0, 0, 0));
+
+        Text selectTitle = new Text("Select one of the options above to display here!");
+        selectTitle.setFont(Font.font("", FontWeight.BOLD, 24));
+        selectTitle.setUnderline(true);
+
+        // boxes to hold descriptions for above buttons
+        VBox updateBox = new VBox();
+        updateBox.setAlignment(Pos.CENTER);
+
+        Text updateTitle = new Text("Update COVID-19 Status/Interactions");
+        updateTitle.setFont(Font.font("", FontWeight.BOLD, 18));
+        updateTitle.setTextAlignment(TextAlignment.CENTER);
+        Text updateDescription = new Text("Update your COVID-19 Status and add people who you've interacted " +
+                "with in the last 14 days.");
+        updateDescription.setFont(Font.font("", FontPosture.ITALIC, 18));
+        updateDescription.setWrappingWidth(400);
+        updateDescription.setTextAlignment(TextAlignment.CENTER);
+        updateBox.getChildren().addAll(updateTitle, updateDescription);
+
+        VBox checkBox = new VBox();
+        checkBox.setAlignment(Pos.CENTER);
+
+        Text checkTitle = new Text("Check COVID-19 Exposure Status");
+        checkTitle.setFont(Font.font("", FontWeight.BOLD, 18));
+        checkTitle.setTextAlignment(TextAlignment.CENTER);
+        Text checkDescription = new Text("See if anyone on your list of interactions has been exposed to or " +
+                "interacted with others who have been exposed to COVID-19.");
+        checkDescription.setFont(Font.font("", FontPosture.ITALIC, 18));
+        checkDescription.setWrappingWidth(400);
+        checkDescription.setTextAlignment(TextAlignment.CENTER);
+        checkBox.getChildren().addAll(checkTitle, checkDescription);
+
+        defaultMessage.getChildren().addAll(selectTitle, updateBox, checkBox);
+        pane.setCenter(defaultMessage);
+
+        StackPane bottomPane = new StackPane();
+        bottomPane.setAlignment(Pos.CENTER);
+        Button btnReturnMain = new Button("Return to Main Menu");
+        btnReturnMain.setFont(Font.font(16));
+        btnReturnMain.setOnMouseClicked(e -> {goMainMenu();});
+
+        bottomPane.getChildren().add(btnReturnMain);
+
+        pane.setBottom(bottomPane);
+        pane.setPadding(new Insets(0, 0, 20, 0));
+
+        return pane;
+
+    }
+
+    public void goMainMenu() {
+
+        stage.setScene(sceneHome);
+        stage.show();
+
+    }
+
+    public void goRegister() {
+
+        stage.setScene(sceneRegister1);
+        stage.show();
+
+    }
+
+    public void goNext() {
+
+        stage.setScene(sceneRegister2);
+        stage.show();
+
+    }
+
+    public void goLogin() {
+
+        stage.setScene(sceneLogin);
+        stage.show();
+
+    }
+
+    public void goLoggedIn() {
+
+        stage.setScene(sceneLoggedIn);
+        stage.show();
+
+    }
+
+}
