@@ -16,6 +16,15 @@ public class User {
 	}
 	
 	/**
+	 * Constructs a user object with a given name.
+	 * 
+	 * @param name
+	 */
+	public User(String name) {
+		this(name, new Address());
+	}
+	
+	/**
 	 * Constructs a user object with a given name, street, city, state, and zip code.
 	 * @param name
 	 * @param streetAddr

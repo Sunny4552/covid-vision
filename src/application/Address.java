@@ -21,6 +21,16 @@ public class Address {
 	}
 	
 	/**
+	 * Constructs an empty Address.
+	 */
+	public Address () {
+		this.streetAddr = "";
+		this.city = "";
+		this.state = "";
+		this.zipCode = 0;
+	}
+	
+	/**
 	 * Constructs an Address with a given string parsed into street address, city, state, and zip code.
 	 * @param addressString
 	 */
@@ -73,6 +83,10 @@ public class Address {
 	 */
 	@Override
 	public String toString() {
+		//if empty address
+		if (streetAddr.equals("") && city.equals("") && state.equals("") && zipCode == 0)
+			return "";
+		
 		//concatenate all instance fields of address together
 		return streetAddr + ", " + city + ", " + state + " " + zipCode;
 	}

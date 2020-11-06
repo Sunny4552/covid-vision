@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //NOTE: Database will be in the form
-//FirstName LastName|Street Address City State ZipCode
+//FirstName LastName|Street Address, City, State ZipCode
 //Test Status
 //Exposure Status
 //Interaction#1|Interaction#2-Interaction#3| …… 
@@ -79,6 +79,7 @@ public class UserDb {
 		interactions.replace(", ", "|");
 		interactions.replace(",", "|");
 		databaseLines.add(interactions.toUpperCase() + "|");
+		
 
 		try {
 			// Append to file
@@ -88,7 +89,7 @@ public class UserDb {
 			fw.write(testStatus + "\n");
 			fw.write("\n"); // Write empty string for exposure status
 			fw.write(interactions + "\n");
-			fw.write("\n");//Write empty string for interactions record line number
+			fw.write("\n");
 			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -102,7 +103,7 @@ public class UserDb {
 	 * @param interactions The user's interactions.
 	 * @param recordLineNum The user's record line number.
 	 */
-	public void writeEntireUserInfo(User user, String testStatus, String interactions, int recordLineNum) {
+	public void writeEntireUserInfo(User user, String testStatus, String exposureLevel, String interactions, int recordLineNum) {
 		String userInfo = user.toString();
 		databaseLines.add(userInfo);
 		databaseLines.add(testStatus.toUpperCase());
@@ -118,7 +119,7 @@ public class UserDb {
 
 			fw.write(userInfo + "\n");
 			fw.write(testStatus + "\n");
-			fw.write("\n"); // Write empty string for exposure status
+			fw.write(new Integer(exposureLevel).toString()); 
 			fw.write(interactions + "\n");
 			fw.write("\n");//Write empty string for interactions record line number
 			fw.close();
@@ -154,12 +155,40 @@ public class UserDb {
 	}
 	
 	/**
+	 * Updates the user's exposure status in the database.
+	 * 
+	 * @param user The user whose exposure status will be updated.
+	 * @param exposureLevel The user's exposure level.
+	 */
+	public void writeExposureStatus(User user, int exposureLevel) {
+		int exposureStatLine = getExposureStatLineNum(user);
+		int currentLine = Integer.parseInt(databaseLines.get(exposureStatLine));
+		if (currentLine >= exposureLevel) {
+			return;
+		}
+		databaseLines.set(exposureStatLine, new Integer(exposureLevel).toString());
+		writeToDatabaseFile();
+	}
+	
+	/**
 	 * Updates the user's interactions record line numbers in the database.
 	 * @param user The user whose interactions record line numbers will be updated.
 	 * @param interactionsLineNum interaction record line numbers, sparated by a |, that will be added
 	 */
 	public void writeInteractionsRecordLineNum (User user, String interactionsLineNum) {
 		int interactRecordsLineNum = getInteractionsRecLineNum (user);
+		String currentLine = databaseLines.get(interactRecordsLineNum);
+		databaseLines.set(interactRecordsLineNum, currentLine + interactionsLineNum.toUpperCase() + "|");
+		writeToDatabaseFile();
+	}
+	
+	/**
+	 * Updates the user's interactions record line numbers in the database.
+	 * @param user The user whose interactions record line numbers will be updated.
+	 * @param interactionsLineNum interaction record line numbers, sparated by a |, that will be added
+	 */
+	public void writeInteractionsRecordLineNum (int lineNum, String interactionsLineNum) {
+		int interactRecordsLineNum = getInteractionsRecLineNum (lineNum);
 		String currentLine = databaseLines.get(interactRecordsLineNum);
 		databaseLines.set(interactRecordsLineNum, currentLine + interactionsLineNum.toUpperCase() + "|");
 		writeToDatabaseFile();
@@ -352,5 +381,14 @@ public class UserDb {
 	 */
 	public int getInteractionsRecLineNum(User user) {
 		return findRegisteredUser(user) + 4;
+	}
+	
+	/**
+	 * Gets the line number in database file where the user's interactions's record line numbers are stored.
+	 * @param lineNum Line number of the user's record whose interaction record line numbers are stored.
+	 * @return The line number in database file where the user's interactions's record line numbers are stored.
+	 */
+	public int getInteractionsRecLineNum(int lineNum) {
+		return lineNum + 4;
 	}
 }

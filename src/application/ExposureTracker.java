@@ -27,33 +27,43 @@ public class ExposureTracker {
 	public void createNewUser(User user, String testStatus, String interactions) {
 		// calls writeNewUser() from UserDb
 
-		database.writeNewUser(user, testStatus, interactions);
+		int userLineNum = database.writeNewUser(user, testStatus, interactions);
+		createEmptyRecordsForInteractions(user, userLineNum, testStatus, interactions);
+
+	}
+
+	public void createEmptyRecordsForInteractions(User user, int userLineNum, String testStatus, String interactions) {
+		String[] interactionNames = database.readInteractions(user);
+		for (String name : interactionNames) {
+			int lineNumInteractionRecords = database.writeNewUser(new User(name), "", user.getName());
+			database.writeInteractionsRecordLineNum(lineNumInteractionRecords, userLineNum);
+			database.addInteractionsRecordLineNum(user, lineNumInteractionRecords);
+		}
 	}
 
 	/**
+	 * Registers a user. If user record is created as an interaction, edit that
+	 * record. If user is not found, create a new record.
 	 * 
-	 * 
-	 * @param information The user's information.
+	 * @param user         user to be registered
+	 * @param testStatus   user COVID-19 test status
+	 * @param interactions list of user interactions
 	 */
 	public void registerNewUser(User user, String testStatus, String interactions) {
 		ArrayList<Integer> unregisteredUserRecords = database.findUnregisteredUser(user);
-		
-		
-		if (database.nameExistsInDb(user) && !database.userFullyRegistered(user))
-		{
-			ArrayList<String[]> listOfUserInteractions = database.readInteractions(database.findUnregisteredUser(user));
-			for (String[] currentUserIteractions: listOfUserInteractions)
-			{
-				if (interactions.contains(currentUserIteractions[0]))
-						{
-							//EDIT CURRENT USER
-							return;
-						}
+
+		if (database.nameExistsInDb(user) && !database.userFullyRegistered(user)) {
+			for (Integer userRecordLineNum : unregisteredUserRecords) {
+				if (interactions.contains(database.readInteractions(userRecordLineNum)[0])) {
+					database.writeEntireUserInfo(user, testStatus, interactions, userRecordLineNum);
+					createEmptyRecordsForInteractions(user, userRecordLineNum, testStatus, interactions);
+					return;
+				}
 			}
 		}
-		
+
 		createNewUser(user, testStatus, interactions);
-		
+
 	}
 
 	/**
@@ -102,7 +112,8 @@ public class ExposureTracker {
 	}
 
 	/**
-	 * Sets the user's Covid test status in the database.
+	 * Sets the user's Covid test status in the database and updates user's
+	 * interaction's exposure status.
 	 * 
 	 * @param user   The user whose Covid test status will be updated.
 	 * @param status The user's Covid test status.
@@ -110,16 +121,27 @@ public class ExposureTracker {
 	public void updateTestStatus(User user, String status) {
 		// The status can either be negative, positive, or not tested.
 		database.writeTestStatus(user, status);
+		if (status.equals("POSITIVE"))
+			updateInteractionsExposure(database.findUser(user), 1);
 	}
 
 	/**
 	 * Update the exposure status of all the people on the interactions list.
 	 * 
-	 * @param user The user whose interactions' exposure status will be updated.
+	 * @param userLineNum   Line number of the user's record whose interactions' exposure status will be updated.
+	 * @param status Status of current user to update interaction's status
 	 */
-	public void updateInteractionsExposure(User user) {
-		// Gets list of all user's interactions
+	public void updateInteractionsExposure(int userLineNum, int exposureLevel) {
 
+		// Gets list of all user's interactions
+		String[] interactionsRecLineNum = database.readInteractionsRecLineNum(userLineNum);
+		for (String lineNum: interactionsRecLineNum)
+		{
+			int intLineNum = Integer.parseInt(lineNum);
+			database.writeExposureStatus(intLineNum, exposureLevel);
+			if (exposureLevel < 3)
+				updateInteractionsExposure(intLineNum, exposureLevel + 1);
+		}
 		// Goes through and marks what degree of exposure user has
 	}
 
