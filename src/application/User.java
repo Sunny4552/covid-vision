@@ -5,7 +5,7 @@ public class User {
 	Address addr;
 
 	/**
-	 * Constructs a user object with a given name, address, and age.
+	 * Constructs a user object with a given name, address.
 	 * 
 	 * @param name
 	 * @param addr
@@ -13,6 +13,15 @@ public class User {
 	public User(String name, Address addr) {
 		this.name = name.toUpperCase();
 		this.addr = addr;
+	}
+	
+	/**
+	 * Constructs a user object with a given name.
+	 * 
+	 * @param name
+	 */
+	public User(String name) {
+		this(name, new Address());
 	}
 	
 	/**
