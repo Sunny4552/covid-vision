@@ -13,6 +13,7 @@ import java.util.List;
 //Test Status
 //Exposure Status
 //Interaction#1|Interaction#2-Interaction#3| …… 
+//InteractionLineNum#1|InteractionLineNum#2|InteractionLineNum#3 ....
 
 public class UserDb {
 	File databaseFile;
@@ -70,8 +71,6 @@ public class UserDb {
 	 */
 	public void writeNewUser(User user, String testStatus, String interactions) {
 
-		// Append to file
-		// Write empty string for exposure status
 		String userInfo = user.toString();
 		databaseLines.add(userInfo);
 		databaseLines.add(testStatus.toUpperCase());
@@ -82,23 +81,57 @@ public class UserDb {
 		databaseLines.add(interactions.toUpperCase() + "|");
 
 		try {
+			// Append to file
 			FileWriter fw = new FileWriter(databaseFile, true);
 
 			fw.write(userInfo + "\n");
 			fw.write(testStatus + "\n");
-			fw.write("\n");
+			fw.write("\n"); // Write empty string for exposure status
 			fw.write(interactions + "\n");
+			fw.write("\n");//Write empty string for interactions record line number
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
+
+	/**
+	 * Given a line number, rewrite the entire user record in the database.
+	 * @param user User whose record will be rewritten.
+	 * @param testStatus The user's Covid test status.
+	 * @param interactions The user's interactions.
+	 * @param recordLineNum The user's record line number.
+	 */
+	public void writeEntireUserInfo(User user, String testStatus, String interactions, int recordLineNum) {
+		String userInfo = user.toString();
+		databaseLines.add(userInfo);
+		databaseLines.add(testStatus.toUpperCase());
+		databaseLines.add(" , ");
+		interactions.replace(" ,", "|");
+		interactions.replace(", ", "|");
+		interactions.replace(",", "|");
+		databaseLines.add(interactions.toUpperCase() + "|");
+
+		try {
+			// Append to file
+			FileWriter fw = new FileWriter(databaseFile);
+
+			fw.write(userInfo + "\n");
+			fw.write(testStatus + "\n");
+			fw.write("\n"); // Write empty string for exposure status
+			fw.write(interactions + "\n");
+			fw.write("\n");//Write empty string for interactions record line number
 			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Adds new interactions to the user's record.
 	 * 
 	 * @param user         The user whose interactions will be updated.
-	 * @param interactions The names of people to be added to the user's current
+	 * @param interactions The names of people, separated by |, to be added to the user's current
 	 *                     interactions list.
 	 */
 	public void writeInteractions(User user, String interactions) {
@@ -111,12 +144,24 @@ public class UserDb {
 	/**
 	 * Updates the user's Covid test status in the database.
 	 * 
-	 * @param user   The user whose test status will be updated.
+	 * @param user The user whose test status will be updated.
 	 * @param status The user's Covid test status.
 	 */
 	public void writeTestStatus(User user, String status) {
 		int testStatLine = getTestStatLineNum(user);
 		databaseLines.set(testStatLine, status.toUpperCase());
+		writeToDatabaseFile();
+	}
+	
+	/**
+	 * Updates the user's interactions record line numbers in the database.
+	 * @param user The user whose interactions record line numbers will be updated.
+	 * @param interactionsLineNum interaction record line numbers, sparated by a |, that will be added
+	 */
+	public void writeInteractionsRecordLineNum (User user, String interactionsLineNum) {
+		int interactRecordsLineNum = getInteractionsRecLineNum (user);
+		String currentLine = databaseLines.get(interactRecordsLineNum);
+		databaseLines.set(interactRecordsLineNum, currentLine + interactionsLineNum.toUpperCase() + "|");
 		writeToDatabaseFile();
 	}
 
@@ -298,5 +343,14 @@ public class UserDb {
 		// Retrieve interactions line number
 		// interactions line is the 3rd line in a user record
 		return findRegisteredUser(user) + 3;
+	}
+	
+	/**
+	 * Gets the line number in database file where the user's interactions's record line numbers are stored.
+	 * @param user The user whose interaction record line numbers are stored.
+	 * @return The line number in database file where the user's interactions's record line numbers are stored.
+	 */
+	public int getInteractionsRecLineNum(User user) {
+		return findRegisteredUser(user) + 4;
 	}
 }
