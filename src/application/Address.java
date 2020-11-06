@@ -34,6 +34,39 @@ public class Address {
 		this.zipCode = Integer.parseInt(stateAndZipcode[1]);
 	}
 	
+	/**
+	 * Checks that the street address is in the correct format.
+	 * 
+	 * @param streetAddr The street address the user entered.
+	 * @return True if the street address is in the correct format.
+	 */
+	public boolean validStreetAddr(String streetAddr) {
+		// makes sure the string is in the format
+
+		// tokenize address
+		String[] address = streetAddr.split(" ");
+
+		// makes sure street has has two strings(name and street type)
+		if (address.length < 3) { //minimum length is 3 because street number, street name, and street type
+			return false;
+		}
+
+		// makes sure first part contains only number
+		if (!(address[0].matches("[0-9+"))) {
+			return false;
+		}
+
+		// makes sure the rest are strings
+		for (int i = 1; i < address.length; i++) {
+
+			// if strings doesn't contain only alphabet letters
+			if (!(address[0].matches("[a-zA-Z]+"))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 	
 	/**
 	 * Returns the address as a string
