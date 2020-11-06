@@ -5,7 +5,7 @@ public class User {
 	Address addr;
 
 	/**
-	 * Constructs a user object with a given name, address, and age.
+	 * Constructs a user object with a given name and address.
 	 * 
 	 * @param name
 	 * @param addr
