@@ -170,6 +170,17 @@ public class UserDb {
 		writeToDatabaseFile();
 	}
 	
+	public void writeExposureStatus(int userLineNum, int exposureLevel){
+		//exposure stat is 2 lines away from user record line number
+		
+		int currentLine = Integer.parseInt(databaseLines.get(exposureStatLine));
+		if (currentLine >= exposureLevel) {
+			return;
+		}
+		databaseLines.set(userLineNum + 2,new Integer(exposureLevel).toString());
+		writeToDatabaseFile(); 
+	}
+	
 	/**
 	 * Updates the user's interactions record line numbers in the database.
 	 * @param user The user whose interactions record line numbers will be updated.
@@ -187,7 +198,7 @@ public class UserDb {
 	 * @param user The user whose interactions record line numbers will be updated.
 	 * @param interactionsLineNum interaction record line numbers, sparated by a |, that will be added
 	 */
-	public void writeInteractionsRecordLineNum (int lineNum, String interactionsLineNum) {
+	public void writeInteractionsRecLineNum (int lineNum, String interactionsLineNum) {
 		int interactRecordsLineNum = getInteractionsRecLineNum (lineNum);
 		String currentLine = databaseLines.get(interactRecordsLineNum);
 		databaseLines.set(interactRecordsLineNum, currentLine + interactionsLineNum.toUpperCase() + "|");
@@ -242,6 +253,12 @@ public class UserDb {
 		}
 		
 		return listInteractions;
+	}
+	
+	public String[] readInteractionsRecLineNum(int userRecLineNum) {
+		String interactionsRecLineNum = databaseLines.get((userRecLineNum + 4));
+		// Parse string 
+		return interactionsRecLineNum.split(("\\|"));
 	}
 
 	/**

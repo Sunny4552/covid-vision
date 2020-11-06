@@ -7,8 +7,8 @@ public class User {
 	/**
 	 * Constructs a user object with a given name and address.
 	 * 
-	 * @param name
-	 * @param addr
+	 * @param name The user's name.
+	 * @param addr The user's address.
 	 */
 	public User(String name, Address addr) {
 		this.name = name.toUpperCase();
@@ -18,10 +18,11 @@ public class User {
 	/**
 	 * Constructs a user object with a given name.
 	 * 
-	 * @param name
+	 * @param name The user's name.
 	 */
 	public User(String name) {
-		this(name, new Address());
+		this.name = name;
+		addr = new Address();
 	}
 	
 	/**
@@ -53,16 +54,6 @@ public class User {
 	public Address getAddr() {
 		return addr;
 	}
-
-//	/**
-//	 * Gets the user's age.
-//	 * 
-//	 * @return the user's age.
-//	 */
-//	public int getAge() {
-//		return age;
-//	}
-//	
 
 	/**
 	 * Checks that the name entered is in the correct format.
