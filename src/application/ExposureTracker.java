@@ -26,8 +26,7 @@ public class ExposureTracker {
 	 */
 	public void createNewUser(User user, String testStatus, String interactions) {
 		// calls writeNewUser() from UserDb
-		database.writeNewUser(user, testStatus, interactions);
-		int userLineNum = database.findRegisteredUser (user);
+		int userLineNum = database.writeNewUser(user, testStatus, interactions);
 		createEmptyRecordsForInteractions(user, userLineNum, testStatus, interactions);
 
 	}
@@ -36,8 +35,8 @@ public class ExposureTracker {
 		String[] interactionNames = database.readInteractions(user);
 		for (String name : interactionNames) {
 			int lineNumInteractionRecords = database.writeNewUser(new User(name), "", user.getName());
-			database.writeInteractionsRecLineNum(lineNumInteractionRecords, userLineNum);
-			database.addInteractionsRecordLineNum(user, lineNumInteractionRecords);
+			database.writeInteractionsRecLineNum(lineNumInteractionRecords, ""+userLineNum);
+			database.writeInteractionsRecordLineNum(user, ""+lineNumInteractionRecords);
 		}
 	}
 

@@ -69,8 +69,9 @@ public class UserDb {
 	 * @param testStatus   The user's Covid test status.
 	 * @param interactions The user's interactions.
 	 */
-	public void writeNewUser(User user, String testStatus, String interactions) {
+	public int writeNewUser(User user, String testStatus, String interactions) {
 
+		int newUserRecNum = databaseLines.size();
 		String userInfo = user.toString();
 		databaseLines.add(userInfo);
 		databaseLines.add(testStatus.toUpperCase());
@@ -94,6 +95,8 @@ public class UserDb {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
+		
+		return newUserRecNum;
 	}
 
 	/**
@@ -119,7 +122,7 @@ public class UserDb {
 
 			fw.write(userInfo + "\n");
 			fw.write(testStatus + "\n");
-			fw.write(new Integer(exposureLevel).toString()); 
+			fw.write(exposureLevel); 
 			fw.write(interactions + "\n");
 			fw.write("\n");//Write empty string for interactions record line number
 			fw.close();
@@ -172,7 +175,7 @@ public class UserDb {
 	
 	public void writeExposureStatus(int userLineNum, int exposureLevel){
 		//exposure stat is 2 lines away from user record line number
-		
+		int exposureStatLine = userLineNum+2;
 		int currentLine = Integer.parseInt(databaseLines.get(exposureStatLine));
 		if (currentLine >= exposureLevel) {
 			return;
@@ -184,7 +187,7 @@ public class UserDb {
 	/**
 	 * Updates the user's interactions record line numbers in the database.
 	 * @param user The user whose interactions record line numbers will be updated.
-	 * @param interactionsLineNum interaction record line numbers, sparated by a |, that will be added
+	 * @param interactionsLineNum interaction record line numbers, separated by a |, that will be added
 	 */
 	public void writeInteractionsRecordLineNum (User user, String interactionsLineNum) {
 		int interactRecordsLineNum = getInteractionsRecLineNum (user);
@@ -196,7 +199,7 @@ public class UserDb {
 	/**
 	 * Updates the user's interactions record line numbers in the database.
 	 * @param user The user whose interactions record line numbers will be updated.
-	 * @param interactionsLineNum interaction record line numbers, sparated by a |, that will be added
+	 * @param interactionsLineNum interaction record line numbers, separated by a |, that will be added
 	 */
 	public void writeInteractionsRecLineNum (int lineNum, String interactionsLineNum) {
 		int interactRecordsLineNum = getInteractionsRecLineNum (lineNum);
@@ -231,7 +234,7 @@ public class UserDb {
 	public String[] readInteractions(int lineNum) {
 
 		String interactions = databaseLines.get(lineNum);
-
+		
 		// Parse string into
 		return interactions.split(("\\|"));
 	}
