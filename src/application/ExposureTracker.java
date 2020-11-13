@@ -53,8 +53,11 @@ public class ExposureTracker {
 
 		if (database.nameExistsInDb(user) && !database.userFullyRegistered(user)) {
 			for (Integer userRecordLineNum : unregisteredUserRecords) {
-				if (interactions.contains(database.readInteractions(userRecordLineNum)[0])) {
-					database.writeEntireUserInfo(user, testStatus, "", interactions, userRecordLineNum);
+				String originalInteraction = database.readInteractions(userRecordLineNum)[0];
+				if (interactions.toUpperCase().contains(originalInteraction)) {
+					System.out.print("Found the record!!!!");
+					String interactionsRemovedOriginalInteraction = interactions.replace((originalInteraction + ", "), "");
+					database.writeEntireUserInfo(user, testStatus, "", interactionsRemovedOriginalInteraction, userRecordLineNum);
 					createEmptyRecordsForInteractions(user, userRecordLineNum, testStatus, interactions);
 					return;
 				}

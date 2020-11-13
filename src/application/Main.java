@@ -1,28 +1,36 @@
 package application;
 
 import javafx.application.Application;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
-import javafx.fxml.FXMLLoader;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.layout.*;
-import javafx.scene.text.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 //TODO Replace with T.K's GUI code
 
 		// when login button, create User(info) with name, street, city state, and
 		// zipcode, and then login(user)
-		// when register new user, create User(info) with name, street, city state, and
+		// when registerx new user, create User(info) with name, street, city state, and
 		// zipcode, and then call login(user))
 		// If login(info) fails (is false), continue to get covid status,
 		// interactions(exact input from user), and call registerUser(user, status,
@@ -167,14 +175,14 @@ public class Main extends Application {
 
         TextField tfName = new TextField();
         tfName.setFont(Font.font(16));
-        tfName.setPromptText("Enter name.");
+        tfName.setPromptText("Enter first and last name.");
         grid.add(tfName, 1, 0);
 //        String value1 = tfName.getText();
 //        System.out.println(value1);
 
         TextField tfAddress = new TextField();
         tfAddress.setFont(Font.font(16));
-        tfAddress.setPromptText("Enter address.");
+        tfAddress.setPromptText("Enter street address.");
         grid.add(tfAddress, 1, 1);
 
         TextField tfCity = new TextField();
@@ -184,7 +192,7 @@ public class Main extends Application {
 
         TextField tfState = new TextField();
         tfState.setFont(Font.font(16));
-        tfState.setPromptText("Enter state.");
+        tfState.setPromptText("Enter state abbreviation.");
         grid.add(tfState, 1, 3);
 
         TextField tfZip = new TextField();
@@ -213,26 +221,40 @@ public class Main extends Application {
         	String valAddress = tfAddress.getText();
         	String valCity = tfCity.getText();
         	String valState = tfState.getText();
+        	String valZip = tfZip.getText();
         	User testName = new User(valName);
+        	
+        	//if one of the fields are empty
         	if(valName.isEmpty() || valAddress.isEmpty() || valCity.isEmpty() || 
-        			valState.isEmpty() || tfZip.getText().isEmpty())
+        			valState.isEmpty() || valZip.isEmpty())
         	{
                 lblError.setText("FIELD(S) ARE EMPTY");
         	}
+        	
+        	//if name is in wrong format
         	else if(!User.validName(valName))
         	{
         		tfName.clear();
         		tfName.setPromptText("FULL NAME W/ SPACES");
         	}
-        	else if(!onlyDigits(tfZip.getText(), tfZip.getText().length()))
+        	
+        	//if zip code is in wrong format
+        	else if(!validZipCode(valZip))
         	{
         		tfZip.clear();
-        		tfZip.setPromptText("ENTER ONLY DIGITS");
+        		tfZip.setPromptText("ENTER ONLY 5 DIGITS");
         	}
+        	
+        	//if state abbreviation is in wrong format
+        	else if (valState.length() !=2) {
+        		tfState.clear();
+        		tfZip.setPromptText("ENTER ONLY STATE ABBREVIATIONS");
+        	}
+        	
+        	//if everything works
         	else
         	{
-	        	
-	        	int value5 = Integer.parseInt(tfZip.getText());
+	        	int value5 = Integer.parseInt(valZip);
 	        	loggedInUser = new User(valName, valAddress, valCity, valState, value5);
 	        	lblError.setText("");
 	        	tfName.clear();
@@ -240,7 +262,7 @@ public class Main extends Application {
 	        	tfCity.clear();
 	        	tfState.clear();
 	        	tfZip.clear();
-	        	tfName.setPromptText("Enter name.");
+	        	tfName.setPromptText("Enter first and last name.");
 	        	tfZip.setPromptText("Enter zip code.");
 	        	goNext();
         	}
@@ -394,12 +416,12 @@ public class Main extends Application {
 
         TextField tfName = new TextField();
         tfName.setFont(Font.font(16));
-        tfName.setPromptText("Enter name.");
+        tfName.setPromptText("Enter first and last name.");
         grid.add(tfName, 1, 0);
 
         TextField tfAddress = new TextField();
         tfAddress.setFont(Font.font(16));
-        tfAddress.setPromptText("Enter address.");
+        tfAddress.setPromptText("Enter street address.");
         grid.add(tfAddress, 1, 1);
 
         TextField tfCity = new TextField();
@@ -409,7 +431,7 @@ public class Main extends Application {
 
         TextField tfState = new TextField();
         tfState.setFont(Font.font(16));
-        tfState.setPromptText("Enter state.");
+        tfState.setPromptText("Enter state abbreviations.");
         grid.add(tfState, 1, 3);
 
         TextField tfZip = new TextField();
@@ -449,10 +471,10 @@ public class Main extends Application {
         		tfName.clear();
         		tfName.setPromptText("FULL NAME W/ SPACES");
         	}
-        	else if(!onlyDigits(tfZip.getText(), tfZip.getText().length()))
+        	else if(!validZipCode(tfZip.getText()))
         	{
         		tfZip.clear();
-        		tfZip.setPromptText("ENTER ONLY DIGITS");
+        		tfZip.setPromptText("ENTER ONLY 5 DIGITS");
         	}
         	else
         	{
@@ -467,7 +489,7 @@ public class Main extends Application {
 		        	tfCity.clear();
 		        	tfState.clear();
 		        	tfZip.clear();
-		        	tfName.setPromptText("Enter name.");
+		        	tfName.setPromptText("Enter first and last name.");
 		        	tfZip.setPromptText("Enter zip code.");
 		        	goLoggedIn();
 	        	}
@@ -475,8 +497,8 @@ public class Main extends Application {
 	        	{
 	        		Alert alert = new Alert(AlertType.INFORMATION);
 	        		alert.setTitle("Login Error");
-	        		alert.setHeaderText("The information entered is not a valid User");
-	        		alert.setContentText("Directing to Register User Page");
+	        		alert.setHeaderText("The information entered is not a valid user.");
+	        		alert.setContentText("Directing to page where you can register.");
 	        		tfName.clear();
 		        	tfAddress.clear();
 		        	tfCity.clear();
@@ -770,25 +792,26 @@ public class Main extends Application {
 		expTrcker.addInteractions(loggedInUser, interactions);
 	}
 	
-	public boolean onlyDigits(String str, int n) 
+	public boolean validZipCode(String str) 
     { 
+		int length = str.length();
+		if (length != 5) {
+			return false;
+		}
         // Traverse the string from 
         // start to end 
-        for (int i = 0; i < n; i++) { 
+        for (int i = 0; i < length; i++) { 
   
             // Check if character is 
-            // digit from 0-9 
-            // then return true 
-            // else false 
-            if (str.charAt(i) >= '0'
-                && str.charAt(i) <= '9') { 
-                return true; 
-            } 
-            else { 
+            // not digit from 0-9 
+            // then return false
+            if (str.charAt(i) <= '0'
+                && str.charAt(i) >= '9') { 
                 return false; 
             } 
+  
         } 
-        return false; 
+        return true; 
     } 
 	
 }
