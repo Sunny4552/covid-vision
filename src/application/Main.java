@@ -200,16 +200,49 @@ public class Main extends Application {
         btnReturnToMain.setFont(Font.font(16));
         btnReturnToMain.setOnMouseClicked(e -> {goMainMenu();});
 
+        Label lblError = new Label("");
+        lblError.setFont(Font.font(16));
+        GridPane.setHalignment(lblError, HPos.LEFT);
+        grid.add(lblError, 1, 5);
+        
         Button btnNext = new Button("Next");
         btnNext.setFont(Font.font(16));
         btnNext.setOnMouseClicked(e -> {
-        	goNext();
-        	String value1 = tfName.getText();
-        	String value2 = tfAddress.getText();
-        	String value3 = tfCity.getText();
-        	String value4 = tfState.getText();
-        	int value5 = Integer.parseInt(tfZip.getText());
-        	loggedInUser = new User(value1, value2, value3, value4, value5);
+        	String valName = tfName.getText();
+        	String valAddress = tfAddress.getText();
+        	String valCity = tfCity.getText();
+        	String valState = tfState.getText();
+        	User testName = new User(valName);
+        	if(valName.isEmpty() || valAddress.isEmpty() || valCity.isEmpty() || 
+        			valState.isEmpty() || tfZip.getText().isEmpty())
+        	{
+                lblError.setText("FIELD(S) ARE EMPTY");
+        	}
+        	else if(!User.validName(valName))
+        	{
+        		tfName.clear();
+        		tfName.setPromptText("FULL NAME W/ SPACES");
+        	}
+        	else if(!onlyDigits(tfZip.getText(), tfZip.getText().length()))
+        	{
+        		tfZip.clear();
+        		tfZip.setPromptText("ENTER ONLY DIGITS");
+        	}
+        	else
+        	{
+	        	
+	        	int value5 = Integer.parseInt(tfZip.getText());
+	        	loggedInUser = new User(valName, valAddress, valCity, valState, value5);
+	        	lblError.setText("");
+	        	tfName.clear();
+	        	tfAddress.clear();
+	        	tfCity.clear();
+	        	tfState.clear();
+	        	tfZip.clear();
+	        	tfName.setPromptText("Enter name.");
+	        	tfZip.setPromptText("Enter zip code.");
+	        	goNext();
+        	}
             //System.out.println(loggedInUser.toString());
         	});
 
@@ -291,11 +324,13 @@ public class Main extends Application {
         Button btnSubmit = new Button("Submit");
         btnSubmit.setFont(Font.font(16));
         btnSubmit.setOnMouseClicked(e -> {
-        	goLoggedIn();
         	String value1 = chooseStatus.getText();
         	String value2 = tfInteractions.getText();
         	//expTrcker.createNewUser(loggedInUser, value1, value2);
         	registerUser(loggedInUser, value1, value2);
+        	chooseStatus.setText("Choose status...");
+        	tfInteractions.clear();
+        	goLoggedIn();
         	});
 
         buttonContainer.getChildren().addAll(btnBack, btnSubmit);
@@ -578,7 +613,7 @@ public class Main extends Application {
 
     // for the button that sends user to first register page
     public void goRegister() {
-
+    	
         stage.setScene(sceneRegister1);
         stage.show();
 
