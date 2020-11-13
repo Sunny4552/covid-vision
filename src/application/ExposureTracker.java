@@ -34,9 +34,20 @@ public class ExposureTracker {
 	public void createEmptyRecordsForInteractions(User user, int userLineNum, String testStatus, String interactions) {
 		String[] interactionNames = database.readInteractions(user);
 		for (String name : interactionNames) {
+			User existingInteractionRec = findExistingInteractionRecord(user, name);
+			if (existingInteractionRec != null) {
+				database.writeInteractions(existingInteractionRec, name);
+				database.writeInteractionsRecordLineNum(existingInteractionRec,""+userLineNum);
+				continue;
+			}
 			int lineNumInteractionRecords = database.writeNewUser(new User(name), "", user.getName());
-			database.writeInteractionsRecLineNum(lineNumInteractionRecords, ""+userLineNum);
-			database.writeInteractionsRecordLineNum(user, ""+lineNumInteractionRecords);
+			database.writeInteractionsRecLineNum(lineNumInteractionRecords, "" + userLineNum);
+			database.writeInteractionsRecordLineNum(user, "" + lineNumInteractionRecords);
+			if (testStatus.equals("POSITIVE"))
+				updateInteractionsExposure(lineNumInteractionRecords, 1);
+			String exposureStat = database.readExposureStat(user);
+			if (!exposureStat.equals(""))
+				updateInteractionsExposure(lineNumInteractionRecords, Integer.parseInt(exposureStat) + 1);
 		}
 	}
 
@@ -55,10 +66,14 @@ public class ExposureTracker {
 			for (Integer userRecordLineNum : unregisteredUserRecords) {
 				String originalInteraction = database.readInteractions(userRecordLineNum)[0];
 				if (interactions.toUpperCase().contains(originalInteraction)) {
-					System.out.print("Found the record!!!!");
-					String interactionsRemovedOriginalInteraction = interactions.replace((originalInteraction + ", "), "");
-					database.writeEntireUserInfo(user, testStatus, "", interactionsRemovedOriginalInteraction, userRecordLineNum);
-					createEmptyRecordsForInteractions(user, userRecordLineNum, testStatus, interactions);
+					String interactionsRemovedOriginalInteraction = interactions.toUpperCase()
+							.replace((originalInteraction + ", "), "");
+					interactionsRemovedOriginalInteraction = interactionsRemovedOriginalInteraction
+							.replace((", " + originalInteraction), "");
+					database.writeEntireUserInfo(user, testStatus, "", interactionsRemovedOriginalInteraction,
+							userRecordLineNum);
+					createEmptyRecordsForInteractions(user, userRecordLineNum, testStatus,
+							interactionsRemovedOriginalInteraction);
 					return;
 				}
 			}
@@ -66,6 +81,58 @@ public class ExposureTracker {
 
 		createNewUser(user, testStatus, interactions);
 
+	}
+
+	/**
+	 * Determines if two users have interacted with each other.
+	 * 
+	 * @param user1 first user
+	 * @param user2 second user
+	 * @return True if both users interacted with each other, false if they have
+	 *         not.
+	 */
+	public boolean bidirectionalInteraction(User user1, User user2) {
+		String[] user1Interactions = database.readInteractions(user1);
+		String[] user2Interactions = database.readInteractions(user2);
+
+		boolean user1InteractedUser2 = false;
+		for (String name : user1Interactions) {
+			if (name.equals(user2.getName()))
+				user1InteractedUser2 = true;
+		}
+
+		if (!user1InteractedUser2)
+			return false;
+
+		boolean user2InteractedUser1 = false;
+		for (String name : user2Interactions) {
+			if (name.equals(user1.getName()))
+				user2InteractedUser1 = true;
+		}
+
+		if (!user2InteractedUser1)
+			return false;
+
+		return true;
+	}
+
+	/**
+	 * Finds existing record of given interaction name of a user.
+	 * 
+	 * @param user            User whose interaction's record is being searched for
+	 * @param interactionName name of interaction whose record is being search for
+	 * @return User object of given interaction if exists, null if it does not exist
+	 */
+	public User findExistingInteractionRecord(User user, String interactionName) {
+		ArrayList<User> records = database.userRecords();
+		interactionName = interactionName.toUpperCase();
+
+		for (User currentRec : records) {
+			if (currentRec.getName().equals(interactionName) && bidirectionalInteraction(user, currentRec))
+				return currentRec;
+		}
+
+		return null;
 	}
 
 	/**
@@ -111,6 +178,8 @@ public class ExposureTracker {
 	 */
 	public void addInteractions(User user, String interactions) {
 		database.writeInteractions(user, interactions);
+		
+		createEmptyRecordsForInteractions(user, database.findRegisteredUser(user), database.readTestStatus(user), interactions);
 	}
 
 	/**
@@ -130,17 +199,18 @@ public class ExposureTracker {
 	/**
 	 * Update the exposure status of all the people on the interactions list.
 	 * 
-	 * @param userLineNum   Line number of the user's record whose interactions' exposure status will be updated.
-	 * @param status Status of current user to update interaction's status
+	 * @param userLineNum Line number of the user's record whose interactions'
+	 *                    exposure status will be updated.
+	 * @param status      Status of current user to update interaction's status
 	 */
 	public void updateInteractionsExposure(int userLineNum, int exposureLevel) {
 
+		database.writeExposureStatus(userLineNum, exposureLevel);
+		
 		// Gets list of all user's interactions
 		String[] interactionsRecLineNum = database.readInteractionsRecLineNum(userLineNum);
-		for (String lineNum: interactionsRecLineNum)
-		{
+		for (String lineNum : interactionsRecLineNum) {
 			int intLineNum = Integer.parseInt(lineNum);
-			database.writeExposureStatus(intLineNum, exposureLevel);
 			if (exposureLevel < 3)
 				updateInteractionsExposure(intLineNum, exposureLevel + 1);
 		}

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 //NOTE: Database will be in the form
@@ -83,7 +84,7 @@ public class UserDb {
 		databaseLines.add(""); // empty string for exposure status
 		databaseLines.add(interactions + "|");
 		databaseLines.add(""); // empty string for interaction nums
-		databaseLines.add(""); //empty line between records
+		databaseLines.add(""); // empty line between records
 
 		try {
 			// Append to file
@@ -115,26 +116,26 @@ public class UserDb {
 	 */
 	public void writeEntireUserInfo(User user, String testStatus, String exposureLevel, String interactions,
 			int recordLineNum) {
-		
-		//write user info
+
+		// write user info
 		String userInfo = user.toString();
-		databaseLines.set(recordLineNum, userInfo); //overwrite user info.
-		
-		//rewrite test status
+		databaseLines.set(recordLineNum, userInfo); // overwrite user info.
+
+		// rewrite test status
 		testStatus = testStatus.toUpperCase();
-		databaseLines.add(testStatus);
-		
-		//rewrite exposure
+		databaseLines.set(recordLineNum + 1, testStatus);
+
+		// rewrite exposure
 		exposureLevel = exposureLevel.toUpperCase();
-		databaseLines.add(exposureLevel);
-		
-		//append interactions
+		databaseLines.set(recordLineNum + 2, exposureLevel);
+
+		// append interactions
 		interactions.replace(" ,", "|");
 		interactions.replace(", ", "|");
 		interactions.replace(",", "|");
-		String currentInteractions = databaseLines.get(getInteractionsLineNum(user)) ;
+		String currentInteractions = databaseLines.get(getInteractionsLineNum(user));
 		interactions = interactions.toUpperCase();
-		databaseLines.add(currentInteractions + interactions + "|");
+		databaseLines.set(recordLineNum + 3, currentInteractions + interactions + "|");
 
 		try {
 			FileWriter fw = new FileWriter(databaseFile);
@@ -159,13 +160,29 @@ public class UserDb {
 	 *                     user's current interactions list.
 	 */
 	public void writeInteractions(User user, String interactions) {
-		int interactionsLineNum = getInteractionsLineNum(user);
-		String currentLine = databaseLines.get(interactionsLineNum);
-		databaseLines.set(interactionsLineNum, currentLine + interactions.toUpperCase() + "|");
-		writeToDatabaseFile();
+		int recordLineNum = findRegisteredUser(user);
+		writeInteractions(recordLineNum, interactions);
 	}
-	
+
+	/**
+	 * Adds new interactions to the user's record.
+	 * 
+	 * @param recordLineNum         The line number of the record of the user whose interactions will be updated.
+	 * @param interactions The names of people, separated by |, to be added to the
+	 *                     user's current interactions list.
+	 */
 	public void writeInteractions(int recordLineNum, String interactions) {
+		// check if interaction already exits, do not write
+		String[] existingInteractions = readInteractions(recordLineNum);
+		String[] newInteractions = interactions.split("|");
+
+		for (String newInteraction : newInteractions) {
+			for (String existingInteraction : existingInteractions) {
+				if (newInteraction.toUpperCase().equals(existingInteraction))
+					interactions.replace("newInteraction", "");
+			}
+		}
+
 		int interactionRecNum = recordLineNum + 3;
 		String currentLine = databaseLines.get(interactionRecNum);
 		databaseLines.set(interactionRecNum, currentLine + interactions.toUpperCase() + "|");
@@ -220,6 +237,16 @@ public class UserDb {
 	 *                            that will be added
 	 */
 	public void writeInteractionsRecordLineNum(User user, String interactionsLineNum) {
+		String[] existingInteractionsRecLineNum = readInteractionsRecLineNum(findRegisteredUser(user));
+		String[] newInteractionsRecLineNum  = interactionsLineNum.split("|");
+
+		for (String newInteractionRecLineNum : newInteractionsRecLineNum) {
+			for (String existingInteractionRecLineNum : existingInteractionsRecLineNum) {
+				if (newInteractionRecLineNum.toUpperCase().equals(existingInteractionRecLineNum))
+					interactionsLineNum.replace(newInteractionRecLineNum, "");
+			}
+		}
+		
 		int interactRecordsLineNum = getInteractionsRecLineNum(user);
 		String currentLine = databaseLines.get(interactRecordsLineNum);
 		databaseLines.set(interactRecordsLineNum, currentLine + interactionsLineNum.toUpperCase() + "|");
@@ -240,7 +267,7 @@ public class UserDb {
 		databaseLines.set(interactRecordsLineNum, currentLine + interactionsLineNum.toUpperCase() + "|");
 		writeToDatabaseFile();
 	}
-	
+
 	/**
 	 * Returns the list of names from the user's interaction list given user.
 	 * 
@@ -294,6 +321,10 @@ public class UserDb {
 
 		return listInteractions;
 	}
+	
+	public String readExposureStat(User user) {
+		return databaseLines.get(getExposureStatLineNum(user));
+	}
 
 	public String[] readInteractionsRecLineNum(int userRecLineNum) {
 		String interactionsRecLineNum = databaseLines.get((userRecLineNum + 4));
@@ -328,6 +359,35 @@ public class UserDb {
 			lineNum++;
 		}
 		return -1;
+	}
+
+	/**
+	 * Creates User object from given record line number.
+	 * 
+	 * @param lineNum line number of record to read from
+	 * @return User object of record at lineNum
+	 */
+	public User retrieveUser(int lineNum) {
+		String[] nameAddress = databaseLines.get(lineNum).split("|");
+		Address userAddress = new Address(nameAddress[1]);
+		return new User(nameAddress[0], userAddress);
+	}
+
+	/**
+	 * Gets list of User records in database
+	 * 
+	 * @return ArrayList of User records in database
+	 */
+	public ArrayList<User> userRecords() {
+
+		int currentLineNum = 0;
+		ArrayList<User> records = new ArrayList<>();
+
+		while (currentLineNum < databaseLines.size()) {
+			records.add(retrieveUser(currentLineNum));
+			currentLineNum += 6;
+		}
+		return records;
 	}
 
 	/**
@@ -390,29 +450,33 @@ public class UserDb {
 		}
 
 	}
-	
+
 	/**
 	 * Merges two records together given the record line number of both records.
-	 * @param rec1LineNum The record line number of the record where the second record will merge to.
-	 * @param rec2LineNum The record line number of the record that will be merged and cleared.
+	 * 
+	 * @param rec1LineNum The record line number of the record where the second
+	 *                    record will merge to.
+	 * @param rec2LineNum The record line number of the record that will be merged
+	 *                    and cleared.
 	 */
-	public void mergeRecords (int rec1LineNum, int rec2LineNum) {
-		//combine interactions
-		String[] rec2Interactions = readInteractions (rec2LineNum); //get rec2 interactions
-		writeInteractions (rec1LineNum, rec2Interactions[0]); //write rec2 interactions to rec1
-		
-		//combine the interaction line num
-		String[] rec2InteractionsLineNum = readInteractionsRecLineNum (rec2LineNum); 
-		writeInteractionsRecLineNum (rec1LineNum, rec2InteractionsLineNum [0]);
-		
-		//go to record2 interactions and update their interact record line num with new number
-		writeInteractions(Integer.parseInt(rec2InteractionsLineNum [0]), rec2Interactions[0]);
-		writeInteractionsRecLineNum (Integer.parseInt(rec2InteractionsLineNum [0]), ""+rec1LineNum);
-		
-		//clear second record
+	public void mergeRecords(int rec1LineNum, int rec2LineNum) {
+		// combine interactions
+		String[] rec2Interactions = readInteractions(rec2LineNum); // get rec2 interactions
+		writeInteractions(rec1LineNum, rec2Interactions[0]); // write rec2 interactions to rec1
+
+		// combine the interaction line num
+		String[] rec2InteractionsLineNum = readInteractionsRecLineNum(rec2LineNum);
+		writeInteractionsRecLineNum(rec1LineNum, rec2InteractionsLineNum[0]);
+
+		// go to record2 interactions and update their interact record line num with new
+		// number
+		writeInteractions(Integer.parseInt(rec2InteractionsLineNum[0]), rec2Interactions[0]);
+		writeInteractionsRecLineNum(Integer.parseInt(rec2InteractionsLineNum[0]), "" + rec1LineNum);
+
+		// clear second record
 	}
-	
-	public void clearRecord (int recLineNum) {
+
+	public void clearRecord(int recLineNum) {
 		databaseLines.set(recLineNum, "");
 		databaseLines.set(recLineNum + 1, "");
 		databaseLines.set(recLineNum + 2, "");
