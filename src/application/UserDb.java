@@ -368,7 +368,11 @@ public class UserDb {
 	 * @return User object of record at lineNum
 	 */
 	public User retrieveUser(int lineNum) {
-		String[] nameAddress = databaseLines.get(lineNum).split("|");
+		String line =  databaseLines.get(lineNum);
+		String[] nameAddress = line.split("\\|");
+		if (noAddress(line)) {
+			return new User(nameAddress[0]);
+		}
 		Address userAddress = new Address(nameAddress[1]);
 		return new User(nameAddress[0], userAddress);
 	}
@@ -425,12 +429,22 @@ public class UserDb {
 		while (lineNum < databaseLines.size()) {
 			String line = databaseLines.get(lineNum);
 			//
-			if (line.contains(user.getName()) && (line.substring(line.indexOf("|")).length() == 1)) {
+			if (line.contains(user.getName()) && (noAddress(line))) {
 				recordLines.add(lineNum);
 			}
 			lineNum++;
 		}
 		return recordLines;
+	}
+	
+	/**
+	 * Determine if given line has an address or not.
+	 * @param line first line of a record to check
+	 * @return true if line does not contain an address, false if it does
+	 */
+	public boolean noAddress(String line)
+	{
+		return (line.substring(line.indexOf("|")).length() == 1);
 	}
 
 	/**

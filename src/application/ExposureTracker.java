@@ -32,14 +32,14 @@ public class ExposureTracker {
 	}
 
 	public void createEmptyRecordsForInteractions(User user, int userLineNum, String testStatus, String interactions) {
-		String[] interactionNames = database.readInteractions(user);
+		String[] interactionNames = interactions.toUpperCase().split(", ");
 		for (String name : interactionNames) {
 			User existingInteractionRec = findExistingInteractionRecord(user, name);
-			if (existingInteractionRec != null) {
-				database.writeInteractions(existingInteractionRec, name);
-				database.writeInteractionsRecordLineNum(existingInteractionRec,""+userLineNum);
-				continue;
-			}
+//			if (existingInteractionRec != null) {
+//				database.writeInteractions(existingInteractionRec, name);
+//				database.writeInteractionsRecordLineNum(existingInteractionRec,""+userLineNum);
+//				continue;
+//			}
 			int lineNumInteractionRecords = database.writeNewUser(new User(name), "", user.getName());
 			database.writeInteractionsRecLineNum(lineNumInteractionRecords, "" + userLineNum);
 			database.writeInteractionsRecordLineNum(user, "" + lineNumInteractionRecords);
