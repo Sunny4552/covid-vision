@@ -102,7 +102,6 @@ public class UserDb {
 			e.printStackTrace();
 		}
 
-		System.out.println(databaseLines.size());
 		return newUserRecNum;
 	}
 
@@ -179,7 +178,7 @@ public class UserDb {
 		for (String newInteraction : newInteractions) {
 			for (String existingInteraction : existingInteractions) {
 				if (newInteraction.toUpperCase().equals(existingInteraction))
-					interactions.replace("newInteraction", "");
+					interactions.replace(newInteraction, "");
 			}
 		}
 
@@ -368,7 +367,9 @@ public class UserDb {
 	 * @return User object of record at lineNum
 	 */
 	public User retrieveUser(int lineNum) {
+		
 		String line =  databaseLines.get(lineNum);
+//		System.out.println(line);
 		String[] nameAddress = line.split("\\|");
 		if (noAddress(line)) {
 			return new User(nameAddress[0]);
@@ -384,6 +385,11 @@ public class UserDb {
 	 */
 	public ArrayList<User> userRecords() {
 
+//		System.out.println("\n\n\n");
+//		for (String s: databaseLines)
+//			System.out.println(s);
+//		System.out.println("\n\n\n");
+		
 		int currentLineNum = 0;
 		ArrayList<User> records = new ArrayList<>();
 
@@ -408,7 +414,7 @@ public class UserDb {
 			if (line.contains(user.getName()) && line.contains(user.getAddr().toString())) {
 				return lineNum;
 			}
-			lineNum++;
+			lineNum+= 6;
 		}
 		return -1;
 	}
@@ -444,6 +450,9 @@ public class UserDb {
 	 */
 	public boolean noAddress(String line)
 	{
+//		System.out.println("noAddress"+line);
+//		int index = line.indexOf("|");
+//		System.out.println("indexOf| : " + index);
 		return (line.substring(line.indexOf("|")).length() == 1);
 	}
 
