@@ -134,21 +134,11 @@ public class UserDb {
 		interactions.replace(",", "|");
 		String currentInteractions = databaseLines.get(getInteractionsLineNum(user));
 		interactions = interactions.toUpperCase();
-		databaseLines.set(recordLineNum + 3, currentInteractions + interactions + "|");
-
-		try {
-			FileWriter fw = new FileWriter(databaseFile);
-
-			fw.write(userInfo + "\n");
-			fw.write(testStatus + "\n");
-			fw.write(exposureLevel);
-			fw.write(interactions + "\n");
-			fw.write("\n");// Write empty string for interactions record line number
-			fw.write("\n");
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!interactions.equals("")) {
+			databaseLines.set(recordLineNum + 3, currentInteractions + interactions + "|");
 		}
+
+		writeToDatabaseFile();
 	}
 
 	/**
@@ -166,9 +156,10 @@ public class UserDb {
 	/**
 	 * Adds new interactions to the user's record.
 	 * 
-	 * @param recordLineNum         The line number of the record of the user whose interactions will be updated.
-	 * @param interactions The names of people, separated by |, to be added to the
-	 *                     user's current interactions list.
+	 * @param recordLineNum The line number of the record of the user whose
+	 *                      interactions will be updated.
+	 * @param interactions  The names of people, separated by |, to be added to the
+	 *                      user's current interactions list.
 	 */
 	public void writeInteractions(int recordLineNum, String interactions) {
 		// check if interaction already exits, do not write
@@ -208,22 +199,38 @@ public class UserDb {
 	 */
 	public void writeExposureStatus(User user, int exposureLevel) {
 		int exposureStatLine = getExposureStatLineNum(user);
-		int currentLine = Integer.parseInt(databaseLines.get(exposureStatLine));
-		if (currentLine >= exposureLevel) {
-			return;
+		String currentLine = databaseLines.get(exposureStatLine);
+		if (!currentLine.equals("")) {
+			int currentExpStat = Integer.parseInt(currentLine);
+			if (currentExpStat <= exposureLevel) {
+				return;
+			}
 		}
-		databaseLines.set(exposureStatLine, new Integer(exposureLevel).toString());
+		if (exposureLevel == 0)
+			databaseLines.set(exposureStatLine, "");
+		else {
+			databaseLines.set(exposureStatLine, new Integer(exposureLevel).toString());
+		}
 		writeToDatabaseFile();
 	}
 
 	public void writeExposureStatus(int userLineNum, int exposureLevel) {
+		System.out.println("INSIDE DB: User: "+userLineNum+"\t\tExposure: "+exposureLevel);
 		// exposure stat is 2 lines away from user record line number
 		int exposureStatLine = userLineNum + 2;
-		int currentLine = Integer.parseInt(databaseLines.get(exposureStatLine));
-		if (currentLine >= exposureLevel) {
-			return;
+		String currentLine = databaseLines.get(exposureStatLine);
+		if (!currentLine.equals("")) {
+			int currentExpStat = Integer.parseInt(currentLine);
+			System.out.println("currrent exp st: "+currentExpStat+"\t\tnew exp st: "+exposureLevel);
+			if (currentExpStat <= exposureLevel) {
+				return;
+			}
 		}
-		databaseLines.set(userLineNum + 2, new Integer(exposureLevel).toString());
+		if (exposureLevel == 0)
+			databaseLines.set(exposureStatLine, "");
+		else {
+			databaseLines.set(exposureStatLine, new Integer(exposureLevel).toString());
+		}
 		writeToDatabaseFile();
 	}
 
@@ -237,7 +244,7 @@ public class UserDb {
 	 */
 	public void writeInteractionsRecordLineNum(User user, String interactionsLineNum) {
 		String[] existingInteractionsRecLineNum = readInteractionsRecLineNum(findRegisteredUser(user));
-		String[] newInteractionsRecLineNum  = interactionsLineNum.split("|");
+		String[] newInteractionsRecLineNum = interactionsLineNum.split("|");
 
 		for (String newInteractionRecLineNum : newInteractionsRecLineNum) {
 			for (String existingInteractionRecLineNum : existingInteractionsRecLineNum) {
@@ -245,7 +252,7 @@ public class UserDb {
 					interactionsLineNum.replace(newInteractionRecLineNum, "");
 			}
 		}
-		
+
 		int interactRecordsLineNum = getInteractionsRecLineNum(user);
 		String currentLine = databaseLines.get(interactRecordsLineNum);
 		databaseLines.set(interactRecordsLineNum, currentLine + interactionsLineNum.toUpperCase() + "|");
@@ -320,7 +327,7 @@ public class UserDb {
 
 		return listInteractions;
 	}
-	
+
 	public String readExposureStat(User user) {
 		return databaseLines.get(getExposureStatLineNum(user));
 	}
@@ -338,6 +345,17 @@ public class UserDb {
 	 */
 	public String readTestStatus(User user) {
 		int testStatLine = getTestStatLineNum(user);
+		return databaseLines.get(testStatLine);
+	}
+
+	/**
+	 * Returns the user's test status given user.
+	 * 
+	 * @param lineNum The line number of the user's record whose test status will be
+	 *                returned.
+	 */
+	public String readTestStatus(int lineNum) {
+		int testStatLine = getTestStatLineNum(lineNum);
 		return databaseLines.get(testStatLine);
 	}
 
@@ -367,8 +385,8 @@ public class UserDb {
 	 * @return User object of record at lineNum
 	 */
 	public User retrieveUser(int lineNum) {
-		
-		String line =  databaseLines.get(lineNum);
+
+		String line = databaseLines.get(lineNum);
 //		System.out.println(line);
 		String[] nameAddress = line.split("\\|");
 		if (noAddress(line)) {
@@ -389,7 +407,7 @@ public class UserDb {
 //		for (String s: databaseLines)
 //			System.out.println(s);
 //		System.out.println("\n\n\n");
-		
+
 		int currentLineNum = 0;
 		ArrayList<User> records = new ArrayList<>();
 
@@ -414,7 +432,7 @@ public class UserDb {
 			if (line.contains(user.getName()) && line.contains(user.getAddr().toString())) {
 				return lineNum;
 			}
-			lineNum+= 6;
+			lineNum += 6;
 		}
 		return -1;
 	}
@@ -442,14 +460,14 @@ public class UserDb {
 		}
 		return recordLines;
 	}
-	
+
 	/**
 	 * Determine if given line has an address or not.
+	 * 
 	 * @param line first line of a record to check
 	 * @return true if line does not contain an address, false if it does
 	 */
-	public boolean noAddress(String line)
-	{
+	public boolean noAddress(String line) {
 //		System.out.println("noAddress"+line);
 //		int index = line.indexOf("|");
 //		System.out.println("indexOf| : " + index);
@@ -483,20 +501,30 @@ public class UserDb {
 	 *                    and cleared.
 	 */
 	public void mergeRecords(int rec1LineNum, int rec2LineNum) {
-		// combine interactions
+		// System.out.println (databaseLines);
+		// write interaction from rec2 into rec1
 		String[] rec2Interactions = readInteractions(rec2LineNum); // get rec2 interactions
 		writeInteractions(rec1LineNum, rec2Interactions[0]); // write rec2 interactions to rec1
 
-		// combine the interaction line num
+		// write interactionLineNum from rec2 into rec1
 		String[] rec2InteractionsLineNum = readInteractionsRecLineNum(rec2LineNum);
 		writeInteractionsRecLineNum(rec1LineNum, rec2InteractionsLineNum[0]);
 
-		// go to record2 interactions and update their interact record line num with new
-		// number
-		writeInteractions(Integer.parseInt(rec2InteractionsLineNum[0]), rec2Interactions[0]);
-		writeInteractionsRecLineNum(Integer.parseInt(rec2InteractionsLineNum[0]), "" + rec1LineNum);
+		// get rec1 interactions line numbers
+		String[] rec1InteractionsLineNum = readInteractionsRecLineNum(rec1LineNum);
+		int interactRecNum1 = Integer.parseInt(rec1InteractionsLineNum[0]); // get only num in interaction line num rec1
+		int interactRecNum2 = Integer.parseInt(rec2InteractionsLineNum[0]); // get only num in interactions line num
+																			// rec2
+
+		String interactRecNum = databaseLines.get(interactRecNum2 + 4);
+		System.out.println(databaseLines);
+		interactRecNum = interactRecNum.replace("" + rec2LineNum, "" + rec1LineNum);
+		databaseLines.set(interactRecNum2 + 4, interactRecNum);
 
 		// clear second record
+		clearRecord(rec2LineNum);
+
+		System.out.println(databaseLines);
 	}
 
 	public void clearRecord(int recLineNum) {
@@ -505,6 +533,7 @@ public class UserDb {
 		databaseLines.set(recLineNum + 2, "");
 		databaseLines.set(recLineNum + 3, "");
 		databaseLines.set(recLineNum + 4, "");
+		writeToDatabaseFile();
 	}
 
 	/**
@@ -519,6 +548,21 @@ public class UserDb {
 		// Retrieve test status line number
 		// interactions line is the 2nd line in a user record
 		return findRegisteredUser(user) + 1;
+	}
+
+	/**
+	 * Gets the line number in database file where the user's test status is
+	 * written.
+	 * 
+	 * @param lineNum The line number of the user's record whose test status line
+	 *                number will be returned.
+	 * @return The line number in database file where the user's test status is
+	 *         written.
+	 */
+	public int getTestStatLineNum(int lineNum) {
+		// Retrieve test status line number
+		// interactions line is the 2nd line in a user record
+		return lineNum + 1;
 	}
 
 	/**
