@@ -350,10 +350,18 @@ public class Main extends Application {
         	String value1 = chooseStatus.getText();
         	String value2 = tfInteractions.getText();
         	
-        	registerUser(loggedInUser, value1, value2);
-        	chooseStatus.setText("Choose status...");
-        	tfInteractions.clear();
-        	goLoggedIn();
+        	if(validInteractionList(value2))
+        	{
+	        	registerUser(loggedInUser, value1, value2);
+	        	chooseStatus.setText("Choose status...");
+	        	tfInteractions.clear();
+	        	goLoggedIn();
+        	}
+        	else
+        	{
+        		tfInteractions.clear();
+        		tfInteractions.setPromptText("INVALID FORMAT");
+        	}
         	});
 
         buttonContainer.getChildren().addAll(btnBack, btnSubmit);
@@ -655,7 +663,13 @@ public class Main extends Application {
 
         Button btSubmit = new Button("Submit Name");
         btSubmit.setFont(Font.font(18));
-        btSubmit.setOnMouseClicked(e -> {}); // fill in later -- add name to database
+        btSubmit.setOnMouseClicked(e -> {
+        	String interaction = tfName.getText();
+        	
+        	expTrcker.addInteractions(loggedInUser, interaction);
+        	//chooseStatus.setText("Choose status...");
+        	tfName.clear();
+        }); // fill in later -- add name to database
 
         hBox.getChildren().addAll(lblName, tfName, btSubmit);
 
@@ -812,6 +826,39 @@ public class Main extends Application {
   
         } 
         return true; 
-    } 
+    }
+	
+	public boolean validInteractionList(String interactionList)
+	{
+		int count = 0;
+//		//corner case where no commas in string (removed)
+//		if(interactionList.indexOf(",", count) == -1)
+//			return false;
+		
+		while(interactionList.indexOf(",", count) != -1)
+		{
+			int currentComma = interactionList.indexOf(",", count);
+			//checks if there is a space between first/last names between commas
+			if(interactionList.indexOf(",", count) <= interactionList.indexOf(" ", count))
+				return false;
+			//checks spacing 
+			else if(interactionList.indexOf(" ", currentComma) != currentComma + 1) 
+			{
+				//corner case where comma is end of string 
+				if(interactionList.indexOf(" ", currentComma) == -1)
+					return true;
+				return false;
+			}
+			else
+				count = currentComma + 2;
+						
+		}
+		
+		//corner case where only one interaction, no spacing
+		if(count < interactionList.length() && interactionList.indexOf(" ", count) == -1)
+			return false;
+		
+		return true;
+	}
 	
 }
