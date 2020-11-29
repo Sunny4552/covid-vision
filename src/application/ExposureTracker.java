@@ -93,7 +93,7 @@ public class ExposureTracker {
 				}
 			}
 			if (foundFirstMatchingRecord) {
-				database.writeEntireUserInfo(user, testStatus, "", newInteractionsRecToMake, firstMatchingRecord);
+				database.writeEntireUserInfo(user, testStatus, database.readExposureStat(user), newInteractionsRecToMake, firstMatchingRecord);
 				createEmptyRecordsForInteractions(user, firstMatchingRecord, testStatus, newInteractionsRecToMake);
 				System.out.println("TEST STATUS: "+testStatus);
 				if (testStatus.toUpperCase().equals("TESTED POSITIVE"))
@@ -187,12 +187,33 @@ public class ExposureTracker {
 	 * @return The user's Covid test status.
 	 */
 	public String getExposureStatus(User user) {
-		return database.readTestStatus(user);
+		String exp = database.readExposureStat(user);
+		
+		String testStat = database.readTestStatus(user);
+		if (testStat.equals("TEST NEGATIVE") || testStat.equals("NOT TESTED")) {
+			if (!exp.equals("")) {
+				int exposure = Integer.parseInt(exp);
+				switch (exposure) {
+				case 1:
+					exp = "FIRST-DEGREE";
+					break;
+				case 2:
+					exp = "SECOND-DEGREE";
+					break;
+				case 3:
+					exp = "THIRD-DEGREE";
+					break;
+				}
+			}
+		}
+		
+		return exp;
 	}
 
 	public String[] getUserInteractions(User user) {
 		return database.readInteractions(user);
 	}
+	
 
 	/**
 	 * Checks if a user with the same name and address already exists in the
@@ -228,9 +249,10 @@ public class ExposureTracker {
 	public void updateTestStatus(User user, String status) {
 		// The status can either be negative, positive, or not tested.
 		database.writeTestStatus(user, status);
-		if (status.equals("POSITIVE"))
+		if (status.equals("POSITIVE")) {
 			updateInteractionsExposure(database.findUser(user), 1);
-		database.writeExposureStatus(user, 0);
+			database.writeExposureStatus(user, 0);
+		}
 	}
 
 	/**

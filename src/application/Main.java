@@ -76,7 +76,7 @@ public class Main extends Application {
         loginPane = createLoginPane();
         loggedInPane = createLoggedInPane();
         updatePane = createUpdatePane();
-        checkPane = createCheckPane();
+        //checkPane = createCheckPane();
 
         // set scenes
         sceneHome = new Scene(homePane, 750, 500);
@@ -85,7 +85,7 @@ public class Main extends Application {
         sceneLogin = new Scene(loginPane, 750, 500);
         sceneLoggedIn = new Scene(loggedInPane, 750, 500);
         sceneUpdate = new Scene(updatePane, 750, 500);
-        sceneCheck = new Scene(checkPane, 750, 500);
+        //sceneCheck = new Scene(checkPane, 750, 500);
 
         // start out at homepage
         primaryStage.setTitle("20/20 Covid Vision");
@@ -674,11 +674,17 @@ public class Main extends Application {
         btSubmit.setFont(Font.font(16));
         btSubmit.setOnMouseClicked(e -> {
             String interaction = tfName.getText();
-
-            expTrcker.addInteractions(loggedInUser, interaction);
+            String[] split = interaction.split(" ");
+            if (split.length == 2) {
+            	expTrcker.addInteractions(loggedInUser, interaction);
+            }
+            else {
+            	tfName.clear();
+                tfName.setPromptText("ENTER FIRST AND LAST NAME");
+            }
             //chooseStatus.setText("Choose status...");
             tfName.clear();
-        }); // fill in later -- add name to database
+        }); 
 
         hBox.getChildren().addAll(lblName, tfName, btSubmit);
 
@@ -717,31 +723,39 @@ public class Main extends Application {
         pane.setVgap(10);
         pane.setHgap(10);
         pane.setAlignment(Pos.CENTER);
+        
+        //labels
+        Label lblTestStatus = new Label("Test Status:");
+        lblTestStatus.setFont(Font.font("", FontWeight.BOLD, 16));
+        GridPane.setHalignment(lblTestStatus, HPos.RIGHT);
+        pane.add(lblTestStatus, 0, 0);
 
-        // labels
-        Label lblStatus = new Label("Status:");
-        lblStatus.setFont(Font.font("", FontWeight.BOLD, 16));
-        GridPane.setHalignment(lblStatus, HPos.RIGHT);
-        pane.add(lblStatus, 0, 0);
+        Label lblExposureStatus = new Label("Exposure Status:");
+        lblExposureStatus.setFont(Font.font("", FontWeight.BOLD, 16));
+        GridPane.setHalignment(lblExposureStatus, HPos.RIGHT);
+        pane.add(lblExposureStatus, 0, 1);
 
         Label lblInteractionList = new Label("Interactions:");
         lblInteractionList.setFont(Font.font("", FontWeight.BOLD, 16));
         GridPane.setHalignment(lblInteractionList, HPos.RIGHT);
-        pane.add(lblInteractionList,0,1);
+        pane.add(lblInteractionList,0,2);
 
         // actual values
-        Text status = new Text();
-        status.setFont(Font.font(16));
-        //status.setText(checkExposureStatus());
-        status.setText("I'm FINE.");
-        pane.add(status, 1, 0);
+        Text testStatus = new Text();
+        testStatus.setFont(Font.font(16));
+        testStatus.setText(checkTestStatus());
+        pane.add(testStatus, 1, 0);
+
+        Text exposureStatus = new Text();
+        exposureStatus.setFont(Font.font(16));
+        exposureStatus.setText(checkExposureStatus());
+        pane.add(exposureStatus, 1, 1);
 
         Text interactions = new Text();
         interactions.setFont(Font.font(16));
-        //interactions.setText(checkPastInteractions());
-        interactions.setText("LOL ZERO FRIENDS");
+        interactions.setText(checkPastInteractions());
         interactions.setWrappingWidth(400);
-        pane.add(interactions, 1, 1);
+        pane.add(interactions, 1, 2);
 
         Button btReturn = new Button("Done");
         btReturn.setFont(Font.font(16));
@@ -795,7 +809,6 @@ public class Main extends Application {
 
     // for the button that logs the user in and sends them to the page to choose update/check status
     public void goLoggedIn() {
-
         stage.setScene(sceneLoggedIn);
         stage.show();
 
@@ -812,6 +825,8 @@ public class Main extends Application {
     // lets user check their status and interactions if they are logged in
     public void goCheckStatus() {
 
+    	checkPane = createCheckPane();
+        sceneCheck = new Scene(checkPane, 750, 500);
         stage.setScene(sceneCheck);
         stage.show();
 
@@ -834,6 +849,8 @@ public class Main extends Application {
     public boolean login(User currentUser) {
         if (expTrcker.loginUser(currentUser)) {
             loggedInUser = currentUser;
+            checkPane = createCheckPane();
+            sceneCheck = new Scene(checkPane, 750, 500);
             return true;
         } else {
             return false;
@@ -842,7 +859,10 @@ public class Main extends Application {
     }
 
     public void registerUser(User user, String status, String interactions) {
-        expTrcker.registerNewUser(user, status, interactions);
+    	interactions = interactions.replace("\n", "");
+        expTrcker.registerNewUser(user, status.toUpperCase(), interactions.toUpperCase());
+        checkPane = createCheckPane();
+        sceneCheck = new Scene(checkPane, 750, 500);
     }
 
     public String checkExposureStatus() {
@@ -860,13 +880,19 @@ public class Main extends Application {
         }
         return concat;
     }
+    
+    public String checkTestStatus() {
+        return expTrcker.getTestStatus(loggedInUser);
+    }
 
     public void updateTestStatus(String status) {
-        expTrcker.updateTestStatus(loggedInUser, status);
+    	checkPane = createCheckPane();
+        sceneCheck = new Scene(checkPane, 750, 500);
+        expTrcker.updateTestStatus(loggedInUser, status.toUpperCase());
     }
 
     public void addInteractions(String interactions) {
-        expTrcker.addInteractions(loggedInUser, interactions);
+        expTrcker.addInteractions(loggedInUser, interactions.toUpperCase());
     }
 
     public boolean validZipCode(String str)
