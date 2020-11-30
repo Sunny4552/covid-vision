@@ -249,9 +249,10 @@ public class ExposureTracker {
 	public void updateTestStatus(User user, String status) {
 		// The status can either be negative, positive, or not tested.
 		database.writeTestStatus(user, status);
-		if (status.equals("POSITIVE")) {
-			updateInteractionsExposure(database.findUser(user), 1);
-			database.writeExposureStatus(user, 0);
+		System.out.println("status: "+status);
+		if (status.equals("TESTED POSITIVE")) {
+			System.out.println("IN");
+			updateInteractionsExposure(database.findUser(user), 0);
 		}
 	}
 
