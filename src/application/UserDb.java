@@ -81,6 +81,7 @@ public class UserDb {
 		interactions = interactions.replace(" ,", "|");
 		interactions = interactions.replace(", ", "|");
 		interactions = interactions.replace(",", "|");
+		
 		databaseLines.add(""); // empty string for exposure status
 		databaseLines.add(interactions + "|");
 		databaseLines.add(""); // empty string for interaction nums
@@ -129,9 +130,11 @@ public class UserDb {
 		databaseLines.set(recordLineNum + 2, exposureLevel);
 
 		// append interactions
-		interactions.replace(" ,", "|");
-		interactions.replace(", ", "|");
-		interactions.replace(",", "|");
+		System.out.println("INTERACTIONS ORIG: "+interactions);
+		interactions = interactions.replace(" ,", "|");
+		interactions = interactions.replace(", ", "|");
+		interactions = interactions.replace(",", "|");
+		System.out.println("INTERACTIONS PASRED: "+interactions);
 		String currentInteractions = databaseLines.get(getInteractionsLineNum(user));
 		interactions = interactions.toUpperCase();
 		if (!interactions.equals("")) {
@@ -162,16 +165,21 @@ public class UserDb {
 	 *                      user's current interactions list.
 	 */
 	public void writeInteractions(int recordLineNum, String interactions) {
-		// check if interaction already exits, do not write
-		String[] existingInteractions = readInteractions(recordLineNum);
-		String[] newInteractions = interactions.split("|");
-
-		for (String newInteraction : newInteractions) {
-			for (String existingInteraction : existingInteractions) {
-				if (newInteraction.toUpperCase().equals(existingInteraction))
-					interactions.replace(newInteraction, "");
-			}
-		}
+//		// check if interaction already exits, do not write
+//		String[] existingInteractions = readInteractions(recordLineNum);
+//		String[] newInteractions = interactions.split("|");
+//
+//		for (String newInteraction : newInteractions) {
+//			for (String existingInteraction : existingInteractions) {
+//				if (newInteraction.toUpperCase().equals(existingInteraction))
+//				{
+//					interactions = interactions.replace(" " + newInteraction, "");
+//					if (interactions.indexOf(",,") >= 0)
+//						interactions = interactions.replace(",,", ",");
+//				}
+//				
+//			}
+//		}
 
 		int interactionRecNum = recordLineNum + 3;
 		String currentLine = databaseLines.get(interactionRecNum);
@@ -243,15 +251,20 @@ public class UserDb {
 	 *                            that will be added
 	 */
 	public void writeInteractionsRecordLineNum(User user, String interactionsLineNum) {
-		String[] existingInteractionsRecLineNum = readInteractionsRecLineNum(findRegisteredUser(user));
-		String[] newInteractionsRecLineNum = interactionsLineNum.split("|");
-
-		for (String newInteractionRecLineNum : newInteractionsRecLineNum) {
-			for (String existingInteractionRecLineNum : existingInteractionsRecLineNum) {
-				if (newInteractionRecLineNum.toUpperCase().equals(existingInteractionRecLineNum))
-					interactionsLineNum.replace(newInteractionRecLineNum, "");
-			}
-		}
+//		String[] existingInteractionsRecLineNum = readInteractionsRecLineNum(findRegisteredUser(user));
+//		String[] newInteractionsRecLineNum = interactionsLineNum.split("|");
+//
+//		for (String newInteractionRecLineNum : newInteractionsRecLineNum) {
+//			for (String existingInteractionRecLineNum : existingInteractionsRecLineNum) {
+//				if (newInteractionRecLineNum.toUpperCase().equals(existingInteractionRecLineNum))
+//				{
+//					interactionsLineNum = interactionsLineNum.replace(newInteractionRecLineNum, "");
+//					if (interactionsLineNum.indexOf("||") >= 0)
+//						interactionsLineNum = interactionsLineNum.replace("||", "|");
+//					interactionsLineNum.replace(newInteractionRecLineNum, "");
+//				}
+//			}
+//		}
 
 		int interactRecordsLineNum = getInteractionsRecLineNum(user);
 		String currentLine = databaseLines.get(interactRecordsLineNum);
@@ -329,7 +342,12 @@ public class UserDb {
 	}
 
 	public String readExposureStat(User user) {
+		System.out.println("USER: "+user+"GOING TO READ FROM LINE: "+getExposureStatLineNum(user)+"AND GOT :"+databaseLines.get(getExposureStatLineNum(user)));
 		return databaseLines.get(getExposureStatLineNum(user));
+	}
+	
+	public String readExposureStat(int recordLineNum) {
+		return databaseLines.get(recordLineNum + 2);
 	}
 
 	public String[] readInteractionsRecLineNum(int userRecLineNum) {
@@ -382,12 +400,13 @@ public class UserDb {
 	 * Creates User object from given record line number.
 	 * 
 	 * @param lineNum line number of record to read from
-	 * @return User object of record at lineNum
+	 * @return User object of record at lineNum if record exists, null if no record at lineNum
 	 */
 	public User retrieveUser(int lineNum) {
 
 		String line = databaseLines.get(lineNum);
-//		System.out.println(line);
+		if (line.equals(""))
+			return null;
 		String[] nameAddress = line.split("\\|");
 		if (noAddress(line)) {
 			return new User(nameAddress[0]);
@@ -412,7 +431,9 @@ public class UserDb {
 		ArrayList<User> records = new ArrayList<>();
 
 		while (currentLineNum < databaseLines.size()) {
-			records.add(retrieveUser(currentLineNum));
+			User retrieved = retrieveUser(currentLineNum);
+			if (retrieved != null)
+				records.add(retrieved);
 			currentLineNum += 6;
 		}
 		return records;
@@ -456,7 +477,7 @@ public class UserDb {
 			if (line.contains(user.getName()) && (noAddress(line))) {
 				recordLines.add(lineNum);
 			}
-			lineNum++;
+			lineNum += 6;
 		}
 		return recordLines;
 	}
@@ -502,6 +523,17 @@ public class UserDb {
 	 */
 	public void mergeRecords(int rec1LineNum, int rec2LineNum) {
 		// System.out.println (databaseLines);
+		String expStat1 = readExposureStat(rec1LineNum);
+		String expStat2 = readExposureStat(rec2LineNum);
+		
+		if (!expStat2.equals("")) {
+			if (expStat1.equals("") || Integer.parseInt(expStat2) < Integer.parseInt(expStat1))
+			{
+				writeExposureStatus(rec1LineNum, Integer.parseInt(expStat2));
+			}
+		}
+		
+		
 		// write interaction from rec2 into rec1
 		String[] rec2Interactions = readInteractions(rec2LineNum); // get rec2 interactions
 		writeInteractions(rec1LineNum, rec2Interactions[0]); // write rec2 interactions to rec1

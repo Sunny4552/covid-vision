@@ -28,7 +28,6 @@ public class ExposureTracker {
 		// calls writeNewUser() from UserDb
 		int userLineNum = database.writeNewUser(user, testStatus, interactions);
 		createEmptyRecordsForInteractions(user, userLineNum, testStatus, interactions);
-		
 
 	}
 
@@ -40,7 +39,6 @@ public class ExposureTracker {
 		String[] interactionNames = interactions.toUpperCase().split(", ");
 		for (String name : interactionNames) {
 			User existingInteractionRec = findExistingInteractionRecord(user, name);
-//			System.out.println(existingInteractionRec);
 			if (existingInteractionRec != null) {
 				database.writeInteractions(existingInteractionRec, name);
 				database.writeInteractionsRecordLineNum(existingInteractionRec, "" + userLineNum);
@@ -49,7 +47,7 @@ public class ExposureTracker {
 			int lineNumInteractionRecords = database.writeNewUser(new User(name), "", user.getName());
 			database.writeInteractionsRecLineNum(lineNumInteractionRecords, "" + userLineNum);
 			database.writeInteractionsRecordLineNum(user, "" + lineNumInteractionRecords);
-			System.out.println("TEST STATUS: "+testStatus);
+			System.out.println("TEST STATUS: " + testStatus);
 			if (testStatus.toUpperCase().equals("TESTED POSITIVE"))
 				updateInteractionsExposure(lineNumInteractionRecords, 1);
 			String exposureStat = database.readExposureStat(user);
@@ -76,26 +74,32 @@ public class ExposureTracker {
 			for (Integer userRecordLineNum : unregisteredUserRecords) {
 				String originalInteraction = database.readInteractions(userRecordLineNum)[0];
 				if (interactions.toUpperCase().contains(originalInteraction)) {
+					newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction + ", "), "");
+					newInteractionsRecToMake = newInteractionsRecToMake.replace((", " + originalInteraction), "");
+					newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction), "");
 					if (!foundFirstMatchingRecord) {
-						newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction + ", "), "");
-						newInteractionsRecToMake = newInteractionsRecToMake.replace((", " + originalInteraction), "");
-						newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction), "");
+//						newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction + ", "), "");
+//						newInteractionsRecToMake = newInteractionsRecToMake.replace((", " + originalInteraction), "");
+//						newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction), "");
 						foundFirstMatchingRecord = true;
 						firstMatchingRecord = userRecordLineNum;
 					} else {
 						System.out.println(
 								"firstMatchingRec: " + firstMatchingRecord + "toMergeRec: " + userRecordLineNum);
-						newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction + ", "), "");
-						newInteractionsRecToMake = newInteractionsRecToMake.replace((", " + originalInteraction), "");
-						newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction), "");
+//						newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction + ", "), "");
+//						newInteractionsRecToMake = newInteractionsRecToMake.replace((", " + originalInteraction), "");
+//						newInteractionsRecToMake = newInteractionsRecToMake.replace((originalInteraction), "");
 						database.mergeRecords(firstMatchingRecord, userRecordLineNum);
 					}
 				}
 			}
 			if (foundFirstMatchingRecord) {
-				database.writeEntireUserInfo(user, testStatus, database.readExposureStat(user), newInteractionsRecToMake, firstMatchingRecord);
+				String exposure = database.readExposureStat(firstMatchingRecord);
+				if (testStatus.equals("TESTED POSITIVE"))
+					exposure = "";
+				database.writeEntireUserInfo(user, testStatus, exposure, newInteractionsRecToMake, firstMatchingRecord);
 				createEmptyRecordsForInteractions(user, firstMatchingRecord, testStatus, newInteractionsRecToMake);
-				System.out.println("TEST STATUS: "+testStatus);
+				System.out.println("TEST STATUS: " + testStatus);
 				if (testStatus.toUpperCase().equals("TESTED POSITIVE"))
 					updateInteractionsExposure(firstMatchingRecord, 0);
 				return;
@@ -188,7 +192,7 @@ public class ExposureTracker {
 	 */
 	public String getExposureStatus(User user) {
 		String exp = database.readExposureStat(user);
-		
+
 		String testStat = database.readTestStatus(user);
 		if (testStat.equals("TEST NEGATIVE") || testStat.equals("NOT TESTED")) {
 			if (!exp.equals("")) {
@@ -206,14 +210,13 @@ public class ExposureTracker {
 				}
 			}
 		}
-		
+
 		return exp;
 	}
 
 	public String[] getUserInteractions(User user) {
 		return database.readInteractions(user);
 	}
-	
 
 	/**
 	 * Checks if a user with the same name and address already exists in the
@@ -233,8 +236,33 @@ public class ExposureTracker {
 	 * @param interactions The list of people who the user has interacted with.
 	 */
 	public void addInteractions(User user, String interactions) {
-		database.writeInteractions(user, interactions);
+		
 
+		// search if empty record for current user exists with bidirectional
+		// relationship to new interaction to be added
+		ArrayList<Integer> unregisteredUserRecords = database.findUnregisteredUser(user);
+		for (Integer i: unregisteredUserRecords)
+			System.out.println("Unregistered Record Line Nums: "+i);
+
+		// if yes, merge empty record with current record
+		for (Integer userRecordLineNum : unregisteredUserRecords) {
+			String originalInteraction = database.readInteractions(userRecordLineNum)[0];
+			if (interactions.toUpperCase().contains(originalInteraction)) {
+				System.out.println("LINE NUM READING FROM: "+userRecordLineNum);
+				String[] toMergeOriginalInteractionRecLineNum = database.readInteractionsRecLineNum(userRecordLineNum);
+				for (String s: toMergeOriginalInteractionRecLineNum)
+					System.out.println("ARRAY: "+s);
+				int interactionOriginalRecLineNum = Integer.parseInt(toMergeOriginalInteractionRecLineNum[0]);
+				database.mergeRecords(database.findRegisteredUser(user), userRecordLineNum);
+				String exposureStat = database.readExposureStat(user);
+				if (!exposureStat.equals(""))
+					updateInteractionsExposure(interactionOriginalRecLineNum, Integer.parseInt(exposureStat) + 1);
+				return;
+			}
+		}
+
+		// if not, create empty record for the specific interaction and add new interaction
+		database.writeInteractions(user, interactions);
 		createEmptyRecordsForInteractions(user, database.findRegisteredUser(user), database.readTestStatus(user),
 				interactions);
 	}
@@ -249,10 +277,9 @@ public class ExposureTracker {
 	public void updateTestStatus(User user, String status) {
 		// The status can either be negative, positive, or not tested.
 		database.writeTestStatus(user, status);
-		System.out.println("status: "+status);
 		if (status.equals("TESTED POSITIVE")) {
-			System.out.println("IN");
-			updateInteractionsExposure(database.findUser(user), 0);
+			updateInteractionsExposure(database.findRegisteredUser(user), 0);
+			database.writeExposureStatus(user, 0);
 		}
 	}
 
@@ -265,12 +292,15 @@ public class ExposureTracker {
 	 */
 	public void updateInteractionsExposure(int userLineNum, int exposureLevel) {
 
-		System.out.println("testing for: "+userLineNum+"\t\t with exposure level "+exposureLevel);
+		System.out.println("testing for: " + userLineNum + "\t\t with exposure level " + exposureLevel);
 		if (!database.readTestStatus(userLineNum).equals("TESTED POSITIVE"))
 			database.writeExposureStatus(userLineNum, exposureLevel);
 
 		// Gets list of all user's interactions
 		String[] interactionsRecLineNum = database.readInteractionsRecLineNum(userLineNum);
+		System.out.println("\n\nCURRENT REC CHEKCING FOR ERROR IS: "+userLineNum);
+		for (String s: interactionsRecLineNum)
+			System.out.println("INTERACTION LINE IS :"+s);
 		for (String lineNum : interactionsRecLineNum) {
 			int intLineNum = Integer.parseInt(lineNum);
 			if (exposureLevel < 3)
