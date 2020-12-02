@@ -17,14 +17,14 @@ import java.util.List;
 //InteractionLineNum#1|InteractionLineNum#2|InteractionLineNum#3 ....
 
 public class UserDb {
-	File databaseFile;
-	List<String> databaseLines;
-	int numRecords;
+	File databaseFile; 
+	List<String> databaseLines; //all the lines of the database
+	int numRecords; //number of records in database
 
 	/**
-	 * Constructs a user database with a given file path
+	 * Constructs a user database with a given file path.
 	 * 
-	 * @param filePath
+	 * @param filePath Path to file.
 	 */
 	public UserDb(String filePath) {
 		databaseFile = new File(filePath);
@@ -37,20 +37,23 @@ public class UserDb {
 	}
 
 	/**
-	 * Searches for the given name
+	 * Searches for the given name.
 	 * 
-	 * @param user The use whose name is to be searched for.
+	 * @param user The user whose name is to be searched for.
 	 * @return True if the name is found.
 	 */
 	public boolean nameExistsInDb(User user) {
+		//if the user can't be found in the database
 		if (findUser(user) == -1) {
 			return false;
 		}
+		
+		//if the user can be found
 		return true;
 	}
 
 	/**
-	 * Determine if user is fully registered or just created from a list of
+	 * Determines if the user is fully registered or if the user is just created from a list of
 	 * interactions.
 	 * 
 	 * @param user The user to be searched for.
@@ -65,27 +68,45 @@ public class UserDb {
 	}
 
 	/**
-	 * Add a new user to the database.
+	 * Adds a new user to the database.
 	 * 
-	 * @param user         The user's name and address.
-	 * @param testStatus   The user's Covid test status.
+	 * @param user The User object that contains the user's name and address.
+	 * @param testStatus The user's Covid test status.
 	 * @param interactions The user's interactions.
+	 * @return The line where the new user record is written.
 	 */
 	public int writeNewUser(User user, String testStatus, String interactions) {
+		//since new user is being added to the bottom of the file, the line where the new user record will be written is equal to the size databaseLines
 		int newUserRecNum = databaseLines.size();
+		
+		//retrieve the user's name and address
 		String userInfo = user.toString();
+		
+		//add the user's name and address to database ArrayList
 		databaseLines.add(userInfo);
+		
+		//add test status to database
 		testStatus = testStatus.toUpperCase();
 		databaseLines.add(testStatus);
+		
+		//since interactions passed in is in the format firstName lastName, firstName lastName, firstName lastName, etc. 
+		//need to convert interactions to format firstName lastName|firstName lastName| etc.
 		interactions = interactions.toUpperCase();
 		interactions = interactions.replace(" ,", "|");
 		interactions = interactions.replace(", ", "|");
 		interactions = interactions.replace(",", "|");
 		
-		databaseLines.add(""); // empty string for exposure status
+		// add empty string for exposure status
+		databaseLines.add(""); 
+		
+		//add interactions
 		databaseLines.add(interactions + "|");
-		databaseLines.add(""); // empty string for interaction nums
-		databaseLines.add(""); // empty line between records
+		
+		// add empty string for interaction nums since there are none when creating a new user
+		databaseLines.add(""); 
+		
+		// add empty line between records
+		databaseLines.add(""); 
 
 		try {
 			// Append to file
@@ -93,31 +114,34 @@ public class UserDb {
 
 			fw.write(userInfo + "\n");
 			fw.write(testStatus + "\n");
-			fw.write("\n"); // Write empty string for exposure status
+			fw.write("\n"); // have empty line for exposure status
 			fw.write(interactions + "\n");
-			fw.write("\n");
-			fw.write("\n");
+			fw.write("\n"); //have empty line for interaction record numbers
+			fw.write("\n"); //have empty line between records
 			fw.close();
-			numRecords++;
+			
+			numRecords++; 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
+		//return 
 		return newUserRecNum;
 	}
 
 	/**
-	 * Given a line number, rewrite the entire user record in the database.
+	 * Given a line number, rewrites the entire user record in the database.
 	 * 
-	 * @param user          User whose record will be rewritten.
+	 * @param user          The user whose record will be rewritten.
 	 * @param testStatus    The user's Covid test status.
+	 * @param exposureLevel The user's Covid exposure level.
 	 * @param interactions  The user's interactions.
 	 * @param recordLineNum The user's record line number.
 	 */
 	public void writeEntireUserInfo(User user, String testStatus, String exposureLevel, String interactions,
 			int recordLineNum) {
 
-		// write user info
+		// ewwrite user info (name and address)
 		String userInfo = user.toString();
 		databaseLines.set(recordLineNum, userInfo); // overwrite user info.
 
@@ -125,22 +149,27 @@ public class UserDb {
 		testStatus = testStatus.toUpperCase();
 		databaseLines.set(recordLineNum + 1, testStatus);
 
-		// rewrite exposure
+		// rewrite exposure status
 		exposureLevel = exposureLevel.toUpperCase();
 		databaseLines.set(recordLineNum + 2, exposureLevel);
 
 		// append interactions
-		System.out.println("INTERACTIONS ORIG: "+interactions);
 		interactions = interactions.replace(" ,", "|");
 		interactions = interactions.replace(", ", "|");
 		interactions = interactions.replace(",", "|");
-		System.out.println("INTERACTIONS PASRED: "+interactions);
+		
+		//retrieve the current interactions line
 		String currentInteractions = databaseLines.get(getInteractionsLineNum(user));
+		
+		//change all interactions to uppercase
 		interactions = interactions.toUpperCase();
+		
+		//if the interaction line is not empty, concatenate interactions with current interactions and write to database
 		if (!interactions.equals("")) {
 			databaseLines.set(recordLineNum + 3, currentInteractions + interactions + "|");
 		}
 
+		//write changes to database
 		writeToDatabaseFile();
 	}
 
@@ -148,11 +177,15 @@ public class UserDb {
 	 * Adds new interactions to the user's record.
 	 * 
 	 * @param user         The user whose interactions will be updated.
-	 * @param interactions The names of people, separated by |, to be added to the
+	 * @param interactions The names of interactions, separated by |, to be added to the
 	 *                     user's current interactions list.
 	 */
 	public void writeInteractions(User user, String interactions) {
+		
+		//retrieve the user's record number
 		int recordLineNum = findRegisteredUser(user);
+		
+		//write the new interactions into the user's record
 		writeInteractions(recordLineNum, interactions);
 	}
 
@@ -161,29 +194,21 @@ public class UserDb {
 	 * 
 	 * @param recordLineNum The line number of the record of the user whose
 	 *                      interactions will be updated.
-	 * @param interactions  The names of people, separated by |, to be added to the
+	 * @param interactions  The names of interactions, separated by |, to be added to the
 	 *                      user's current interactions list.
 	 */
 	public void writeInteractions(int recordLineNum, String interactions) {
-//		// check if interaction already exits, do not write
-//		String[] existingInteractions = readInteractions(recordLineNum);
-//		String[] newInteractions = interactions.split("|");
-//
-//		for (String newInteraction : newInteractions) {
-//			for (String existingInteraction : existingInteractions) {
-//				if (newInteraction.toUpperCase().equals(existingInteraction))
-//				{
-//					interactions = interactions.replace(" " + newInteraction, "");
-//					if (interactions.indexOf(",,") >= 0)
-//						interactions = interactions.replace(",,", ",");
-//				}
-//				
-//			}
-//		}
 
-		int interactionRecNum = recordLineNum + 3;
+		//retrieve the user's record number
+		int interactionRecNum = getInteractionsLineNum(recordLineNum);
+		
+		//get the current interactions
 		String currentLine = databaseLines.get(interactionRecNum);
+		
+		//concatenate the interactions with the user's current interactions
 		databaseLines.set(interactionRecNum, currentLine + interactions.toUpperCase() + "|");
+		
+		//rewrite the database file
 		writeToDatabaseFile();
 	}
 
@@ -251,20 +276,6 @@ public class UserDb {
 	 *                            that will be added
 	 */
 	public void writeInteractionsRecordLineNum(User user, String interactionsLineNum) {
-//		String[] existingInteractionsRecLineNum = readInteractionsRecLineNum(findRegisteredUser(user));
-//		String[] newInteractionsRecLineNum = interactionsLineNum.split("|");
-//
-//		for (String newInteractionRecLineNum : newInteractionsRecLineNum) {
-//			for (String existingInteractionRecLineNum : existingInteractionsRecLineNum) {
-//				if (newInteractionRecLineNum.toUpperCase().equals(existingInteractionRecLineNum))
-//				{
-//					interactionsLineNum = interactionsLineNum.replace(newInteractionRecLineNum, "");
-//					if (interactionsLineNum.indexOf("||") >= 0)
-//						interactionsLineNum = interactionsLineNum.replace("||", "|");
-//					interactionsLineNum.replace(newInteractionRecLineNum, "");
-//				}
-//			}
-//		}
 
 		int interactRecordsLineNum = getInteractionsRecLineNum(user);
 		String currentLine = databaseLines.get(interactRecordsLineNum);

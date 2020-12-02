@@ -252,9 +252,15 @@ public class Main extends Application {
 			// if state abbreviation is in wrong format
 			else if (valState.length() != 2) {
 				tfState.clear();
-				tfZip.setPromptText("ENTER ONLY STATE ABBREVIATIONS");
+				tfState.setPromptText("ENTER ONLY STATE ABBREVIATIONS");
 			}
-
+			
+			// if address is in the wrong format 
+			else if(!validAddress(valAddress))
+			{
+				tfAddress.clear();
+				tfAddress.setPromptText("NUM + STREET");
+			}
 			// if everything works
 			else {
 				int value5 = Integer.parseInt(tfZip.getText());
@@ -509,7 +515,11 @@ public class Main extends Application {
 			} else if (!validZipCode(tfZip.getText())) {
 				tfZip.clear();
 				tfZip.setPromptText("ENTER ONLY 5 DIGITS");
-			} else {
+				
+			} else if(!validAddress(valAddress)){
+				tfAddress.clear();
+				tfAddress.setPromptText("NUM + STREET");
+			}else {
 
 				int value5 = Integer.parseInt(tfZip.getText());
 				User attemptLoginUser = new User(valName, valAddress, valCity, valState, value5);
@@ -976,5 +986,29 @@ public class Main extends Application {
 
 		return true;
 	}
+    
+    public boolean validAddress(String address)
+    {
+    	//checks first case of address formatting
+    	if(!address.contains(" "))
+    		return false;
+    	
+    	//splits address to check num string
+    	String[] split = address.split(" ");
+    	String str = split[0];
 
+    	for (int i = 0; i < str.length(); i++) {
+             // Check if character is
+             // not digit 
+             // then return false
+    		
+             if (!Character.isDigit(str.charAt(i))) {
+            	 System.out.println(str.charAt(i));
+                 return false;
+             }
+    	 }
+    	 return true;
+    	
+    }
+    
 }
