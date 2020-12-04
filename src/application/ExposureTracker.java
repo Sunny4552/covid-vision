@@ -225,20 +225,23 @@ public class ExposureTracker {
 		// read test status of user from database
 		String testStat = database.readTestStatus(user);
 
-		// convert exposure status to word form
-		int exposure = Integer.parseInt(exp);
-		switch (exposure) {
-		case 1:
-			exp = "FIRST-DEGREE";
-			break;
-		case 2:
-			exp = "SECOND-DEGREE";
-			break;
-		case 3:
-			exp = "THIRD-DEGREE";
-			break;
-		default:
-			exp = "";
+		if (!exp.equals((""))){
+			// convert exposure status to word form
+			int exposure = Integer.parseInt(exp);
+			switch (exposure) {
+			case 1:
+				exp = "FIRST-DEGREE";
+				break;
+			case 2:
+				exp = "SECOND-DEGREE";
+				break;
+			case 3:
+				exp = "THIRD-DEGREE";
+				break;
+			default:
+				exp = "";
+			}
+
 		}
 
 		return exp;
