@@ -1,5 +1,11 @@
 package application;
 
+/**
+ * Simulates a user that has a name and address.
+ * 
+ * @author Thi Nguyen, Minh Nguyen, Sunny Mistry, T.K. Bui
+ *
+ */
 public class User {
 	private String name;
 	Address addr;

@@ -27,19 +27,10 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-//TODO Replace with T.K's GUI code
-
-// when login button, create User(info) with name, street, city state, and
-// zipcode, and then login(user)
-// when registerx new user, create User(info) with name, street, city state, and
-// zipcode, and then call login(user))
-// If login(info) fails (is false), continue to get covid status,
-// interactions(exact input from user), and call registerUser(user, status,
-// interactions)
 
 public class Main extends Application {
 
-	private ExposureTracker expTrcker = new ExposureTracker("FileDatabase.txt");
+	private ExposureTracker expTracker = new ExposureTracker("FileDatabase.txt");
 	private User currentSystemUser = null; // stores user currently logged in
 
 	// stage
@@ -76,7 +67,6 @@ public class Main extends Application {
 		loginPane = createLoginPane();
 		loggedInPane = createLoggedInPane();
 		updatePane = createUpdatePane();
-		// checkPane = createCheckPane();
 
 		// set scenes
 		sceneHome = new Scene(homePane, 750, 500);
@@ -85,7 +75,6 @@ public class Main extends Application {
 		sceneLogin = new Scene(loginPane, 750, 500);
 		sceneLoggedIn = new Scene(loggedInPane, 750, 500);
 		sceneUpdate = new Scene(updatePane, 750, 500);
-		// sceneCheck = new Scene(checkPane, 750, 500);
 
 		// start out at homepage
 		primaryStage.setTitle("20/20 Covid Vision");
@@ -101,7 +90,7 @@ public class Main extends Application {
 	/* methods that create the scenes */
 
 	// creates the default homepage where user can login/register
-	public VBox createHomePane() {
+	private VBox createHomePane() {
 
 		VBox pane = new VBox();
 		pane.setAlignment(Pos.CENTER);
@@ -135,7 +124,7 @@ public class Main extends Application {
 	}
 
 	// creates the first register page
-	public HBox createRegisterPane1() {
+	private HBox createRegisterPane1() {
 
 		// the overarching hbox container for this page
 		HBox pane = new HBox();
@@ -182,8 +171,6 @@ public class Main extends Application {
 		tfName.setFont(Font.font(16));
 		tfName.setPromptText("Enter first and last name.");
 		grid.add(tfName, 1, 0);
-//        String value1 = tfName.getText();
-//        System.out.println(value1);
 
 		TextField tfAddress = new TextField();
 		tfAddress.setFont(Font.font(16));
@@ -308,7 +295,7 @@ public class Main extends Application {
 	}
 
 	// creates the next register page that the first goes to next
-	public HBox createRegisterPane2() {
+	private HBox createRegisterPane2() {
 
 		// the overarching hbox container for this page
 		HBox pane = new HBox();
@@ -414,7 +401,7 @@ public class Main extends Application {
 	}
 
 	// creates the page where user can login
-	public HBox createLoginPane() {
+	private HBox createLoginPane() {
 
 		// the overarching hbox container for this page
 		HBox pane = new HBox();
@@ -565,7 +552,7 @@ public class Main extends Application {
 	}
 
 	// creates the page displayed when a user finishes registering/logging in
-	public BorderPane createLoggedInPane() {
+	private BorderPane createLoggedInPane() {
 
 		BorderPane pane = new BorderPane();
 
@@ -654,7 +641,7 @@ public class Main extends Application {
 	}
 
 	// creates the page for user to update their status
-	public VBox createUpdatePane() {
+	private VBox createUpdatePane() {
 
 		// holds section for update status and add interactions
 		VBox vBox = new VBox();
@@ -749,7 +736,7 @@ public class Main extends Application {
 	}
 
 	// creates the page to display user's exposure status
-	public Pane createCheckPane() {
+	private Pane createCheckPane() {
 
 		VBox vBox = new VBox();
 		vBox.setAlignment(Pos.CENTER);
@@ -815,7 +802,7 @@ public class Main extends Application {
 	/* methods for buttons to go to a certain scene */
 
 	// for the button that sends user back to login/register screen
-	public void goMainMenu() {
+	private void goMainMenu() {
 
 		stage.setScene(sceneHome);
 		stage.show();
@@ -823,7 +810,7 @@ public class Main extends Application {
 	}
 
 	// for the button that sends user to first register page
-	public void goRegister() {
+	private void goRegister() {
 
 		stage.setScene(sceneRegister1);
 		stage.show();
@@ -831,7 +818,7 @@ public class Main extends Application {
 	}
 
 	// for the button that sends user to next register page
-	public void goNext() {
+	private void goNext() {
 
 		stage.setScene(sceneRegister2);
 		stage.show();
@@ -839,7 +826,7 @@ public class Main extends Application {
 	}
 
 	// for the button that sends user to the login page
-	public void goLogin() {
+	private void goLogin() {
 
 		stage.setScene(sceneLogin);
 		stage.show();
@@ -848,14 +835,14 @@ public class Main extends Application {
 
 	// for the button that logs the user in and sends them to the page to choose
 	// update/check status
-	public void goLoggedIn() {
+	private void goLoggedIn() {
 		stage.setScene(sceneLoggedIn);
 		stage.show();
 
 	}
 
 	// for the button so user can go update status and interactions
-	public void goUpdateStatus() {
+	private void goUpdateStatus() {
 
 		stage.setScene(sceneUpdate);
 		stage.show();
@@ -863,7 +850,7 @@ public class Main extends Application {
 	}
 
 	// lets user check their status and interactions if they are logged in
-	public void goCheckStatus() {
+	private void goCheckStatus() {
 
 		checkPane = createCheckPane();
 		sceneCheck = new Scene(checkPane, 750, 500);
@@ -875,18 +862,18 @@ public class Main extends Application {
 	/**
 	 * Determines if login information matches a user in the database and if it
 	 * does, stores user identification information in loggedInUser.
+	 * @param currentUser User to check if could login
 	 *
-	 * @param user User to check if could login
 	 */
-	public void login(User currentUser) {
+	private void login(User currentUser) {
 		currentSystemUser = currentUser;
 		checkPane = createCheckPane();
 		sceneCheck = new Scene(checkPane, 750, 500);
 
 	}
 
-	public boolean couldLogin(User currentUser) {
-		if (expTrcker.loginUser(currentUser)) {
+	private boolean couldLogin(User currentUser) {
+		if (expTracker.loginUser(currentUser)) {
 			return true;
 		} else {
 			return false;
@@ -894,19 +881,19 @@ public class Main extends Application {
 
 	}
 
-	public void registerUser(User user, String status, String interactions) {
+	private void registerUser(User user, String status, String interactions) {
 		interactions = interactions.replace("\n", "");
-		expTrcker.registerNewUser(user, status.toUpperCase(), interactions.toUpperCase());
+		expTracker.registerNewUser(user, status.toUpperCase(), interactions.toUpperCase());
 		checkPane = createCheckPane();
 		sceneCheck = new Scene(checkPane, 750, 500);
 	}
 
-	public String checkExposureStatus() {
-		return expTrcker.getExposureStatus(currentSystemUser);
+	private String checkExposureStatus() {
+		return expTracker.getExposureStatus(currentSystemUser);
 	}
 
-	public String checkPastInteractions() {
-		String[] interactionsList = expTrcker.getUserInteractions(currentSystemUser);
+	private String checkPastInteractions() {
+		String[] interactionsList = expTracker.getUserInteractions(currentSystemUser);
 		String concat = "";
 
 		for (int i = 0; i < interactionsList.length; i++) {
@@ -917,21 +904,21 @@ public class Main extends Application {
 		return concat;
 	}
 
-	public String checkTestStatus() {
-		return expTrcker.getTestStatus(currentSystemUser);
+	private String checkTestStatus() {
+		return expTracker.getTestStatus(currentSystemUser);
 	}
 
-	public void updateTestStatus(String status) {
+	private void updateTestStatus(String status) {
 		checkPane = createCheckPane();
 		sceneCheck = new Scene(checkPane, 750, 500);
-		expTrcker.updateTestStatus(currentSystemUser, status.toUpperCase());
+		expTracker.updateTestStatus(currentSystemUser, status.toUpperCase());
 	}
 
-	public void addInteractions(String interactions) {
-		expTrcker.addInteractions(currentSystemUser, interactions.toUpperCase());
+	private void addInteractions(String interactions) {
+		expTracker.addInteractions(currentSystemUser, interactions.toUpperCase());
 	}
 
-	public boolean validZipCode(String str) {
+	private boolean validZipCode(String str) {
 		int length = str.length();
 		if (length != 5) {
 			return false;
@@ -951,18 +938,15 @@ public class Main extends Application {
 		return true;
 	}
 
-	public boolean validChooseStatus(String status) {
+	private boolean validChooseStatus(String status) {
 		if (status != "Choose status...") {
 			return true;
 		} else
 			return false;
 	}
 
-	public boolean validInteractionList(String interactionList) {
+	private boolean validInteractionList(String interactionList) {
 		int count = 0;
-//		//corner case where no commas in string (removed)
-//		if(interactionList.indexOf(",", count) == -1)
-//			return false;
 
 		while (interactionList.indexOf(",", count) != -1) {
 			int currentComma = interactionList.indexOf(",", count);
@@ -987,7 +971,7 @@ public class Main extends Application {
 		return true;
 	}
     
-    public boolean validAddress(String address)
+    private boolean validAddress(String address)
     {
     	//checks first case of address formatting
     	if(!address.contains(" "))

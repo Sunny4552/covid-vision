@@ -1,5 +1,11 @@
 package application;
 
+/**
+ * Simulates an address that has a street address, city, state, and zip code.
+ * 
+ * @author Thi Nguyen, Minh Nguyen, Sunny Mistry, T.K. Bui
+ *
+ */
 public class Address {
 	private String streetAddr;
 	private String city;

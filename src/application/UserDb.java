@@ -16,6 +16,12 @@ import java.util.List;
 //Interaction#1|Interaction#2-Interaction#3| …… 
 //InteractionLineNum#1|InteractionLineNum#2|InteractionLineNum#3 ....
 
+/**
+ * Simulates a database that stores user's names, test status, exposure status, and interactions.
+ * 
+ * @author Thi Nguyen, Minh Nguyen, Sunny Mistry, T.K. Bui
+ *
+ */
 public class UserDb {
 	File databaseFile;
 	List<String> databaseLines; // all the lines of the database
@@ -324,7 +330,7 @@ public class UserDb {
 	 * @param interactionsLineNum Interaction record line numbers, separated by a |,
 	 *                            that will be added to the user's record.
 	 */
-	public void writeInteractionsRecordLineNum(User user, String interactionsLineNum) {
+	public void writeInteractionsRecLineNum(User user, String interactionsLineNum) {
 
 		// retrieve the interactions record line number
 		int interactRecordsLineNum = getInteractionsRecLineNum(user);
@@ -497,7 +503,7 @@ public class UserDb {
 	 * @return The line number where user record is found or -1 if the user can't be
 	 *         found.
 	 */
-	public int findUser(User user) {
+	private int findUser(User user) {
 		int lineNum = 0;
 
 		// search through the database

@@ -2,6 +2,12 @@ package application;
 
 import java.util.ArrayList;
 
+/**
+ * Simulates a 
+ * 
+ * @author Thi Nguyen, Minh Nguyen, Sunny Mistry, T.K. Bui
+ *
+ */
 public class ExposureTracker {
 
 	private UserDb database;
@@ -80,7 +86,7 @@ public class ExposureTracker {
 
 			// store the line number of the empty record into the user's record for future
 			// access to the empty records for the interactions
-			database.writeInteractionsRecordLineNum(user, "" + lineNumInteractionRecords);
+			database.writeInteractionsRecLineNum(user, "" + lineNumInteractionRecords);
 
 			// if the user's test status is positive
 			if (testStatus.toUpperCase().equals("TESTED POSITIVE")) {
