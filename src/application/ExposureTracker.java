@@ -268,7 +268,8 @@ public class ExposureTracker {
 	 * Checks if a user with the same name and address already exists in the
 	 * database.
 	 * 
-	 * @param infoEntered The name and address of the user.
+	 * @param user The user that the database will check for.
+	 * 
 	 * @return True if a user with the same name and address already exists in the
 	 *         database, false if the user does not exist.
 	 */

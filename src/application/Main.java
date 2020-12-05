@@ -492,7 +492,7 @@ public class Main extends Application {
 			String valAddress = tfAddress.getText();
 			String valCity = tfCity.getText();
 			String valState = tfState.getText();
-			User testName = new User(valName);
+			
 			if (valName.isEmpty() || valAddress.isEmpty() || valCity.isEmpty() || valState.isEmpty()
 					|| tfZip.getText().isEmpty()) {
 				lblError.setText("FIELD(S) ARE EMPTY");
