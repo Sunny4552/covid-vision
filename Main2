@@ -93,7 +93,7 @@ public class Main extends Application {
         primaryStage.setTitle("20/20 Covid-19 Vision");
         primaryStage.setMaximized(true);
         primaryStage.setScene(sceneHome);
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/covid2.png")));
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/application/images/covid2.png")));
         primaryStage.show();
 
     }
@@ -118,12 +118,12 @@ public class Main extends Application {
         buttonContainer.setAlignment(Pos.CENTER);
 
         // image for logo and welcome
-        Image welcomeImage = new Image(getClass().getResourceAsStream("/images/welcome2.png"));
+        Image welcomeImage = new Image(getClass().getResourceAsStream("/application/images/welcome2.png"));
         ImageView welcome = new ImageView(welcomeImage);
 
         // image to use as register button
-        Image registerImage = new Image(getClass().getResourceAsStream("/images/register1.png"));
-        Image registerHovered = new Image(getClass().getResourceAsStream("/images/register2.png"));
+        Image registerImage = new Image(getClass().getResourceAsStream("/application/images/register1.png"));
+        Image registerHovered = new Image(getClass().getResourceAsStream("/application/images/register2.png"));
         ImageView register = new ImageView(registerImage);
 
         register.setFitHeight(100);
@@ -134,8 +134,8 @@ public class Main extends Application {
         register.setOnMouseExited(e -> {register.setImage(registerImage);});
 
         // image to use as login button
-        Image loginImage = new Image(getClass().getResourceAsStream("/images/login1.png"));
-        Image loginHovered = new Image(getClass().getResourceAsStream("/images/login2.png"));
+        Image loginImage = new Image(getClass().getResourceAsStream("/application/images/login1.png"));
+        Image loginHovered = new Image(getClass().getResourceAsStream("/application/images/login2.png"));
         ImageView login = new ImageView(loginImage);
 
         login.setFitHeight(100);
@@ -230,8 +230,8 @@ public class Main extends Application {
         buttonContainer.setSpacing(5);
 
         // image to use as back button
-        Image backImage = new Image(getClass().getResourceAsStream("/images/back1.png"));
-        Image backHovered = new Image(getClass().getResourceAsStream("/images/back2.png"));
+        Image backImage = new Image(getClass().getResourceAsStream("/application/images/back1.png"));
+        Image backHovered = new Image(getClass().getResourceAsStream("/application/images/back2.png"));
         ImageView backButton = new ImageView(backImage);
 
         backButton.setFitHeight(100);
@@ -247,8 +247,8 @@ public class Main extends Application {
         grid.add(lblError, 1, 5);
 
         // image to use as next button
-        Image nextImage = new Image(getClass().getResourceAsStream("/images/next1.png"));
-        Image nextHovered = new Image(getClass().getResourceAsStream("/images/next2.png"));
+        Image nextImage = new Image(getClass().getResourceAsStream("/application/images/next1.png"));
+        Image nextHovered = new Image(getClass().getResourceAsStream("/application/images/next2.png"));
         ImageView nextButton = new ImageView(nextImage);
 
         nextButton.setFitHeight(100);
@@ -386,8 +386,8 @@ public class Main extends Application {
         //buttonContainer.setSpacing(5);
 
         // image to use as back button
-        Image backImage = new Image(getClass().getResourceAsStream("/images/back1.png"));
-        Image backHovered = new Image(getClass().getResourceAsStream("/images/back2.png"));
+        Image backImage = new Image(getClass().getResourceAsStream("/application/images/back1.png"));
+        Image backHovered = new Image(getClass().getResourceAsStream("/application/images/back2.png"));
         ImageView backButton = new ImageView(backImage);
 
         backButton.setFitHeight(100);
@@ -398,8 +398,8 @@ public class Main extends Application {
         backButton.setOnMouseExited(e -> {backButton.setImage(backImage);});
 
         // image to use as register button
-        Image registerImage = new Image(getClass().getResourceAsStream("/images/register1.png"));
-        Image registerHovered = new Image(getClass().getResourceAsStream("/images/register2.png"));
+        Image registerImage = new Image(getClass().getResourceAsStream("/application/images/register1.png"));
+        Image registerHovered = new Image(getClass().getResourceAsStream("/application/images/register2.png"));
         ImageView registerButton = new ImageView(registerImage);
 
         registerButton.setFitHeight(100);
@@ -515,8 +515,8 @@ public class Main extends Application {
         buttonContainer.setSpacing(5);
 
         // image to use as back button
-        Image backImage = new Image(getClass().getResourceAsStream("/images/back1.png"));
-        Image backHovered = new Image(getClass().getResourceAsStream("/images/back2.png"));
+        Image backImage = new Image(getClass().getResourceAsStream("/application/images/back1.png"));
+        Image backHovered = new Image(getClass().getResourceAsStream("/application/images/back2.png"));
         ImageView back = new ImageView(backImage);
 
         back.setFitHeight(100);
@@ -527,8 +527,8 @@ public class Main extends Application {
         back.setOnMouseExited(e -> {back.setImage(backImage);});
 
         // image to use as login button
-        Image loginImage = new Image(getClass().getResourceAsStream("/images/login1.png"));
-        Image loginHovered = new Image(getClass().getResourceAsStream("/images/login2.png"));
+        Image loginImage = new Image(getClass().getResourceAsStream("/application/images/login1.png"));
+        Image loginHovered = new Image(getClass().getResourceAsStream("/application/images/login2.png"));
         ImageView loginButton = new ImageView(loginImage);
 
         loginButton.setFitHeight(100);
@@ -666,8 +666,8 @@ public class Main extends Application {
         hBoxTop.setPadding(new Insets(20, 0, 0, 0));
 
         // image to use as update button
-        Image updateImage = new Image(getClass().getResourceAsStream("/images/update1.png"));
-        Image updateHovered = new Image(getClass().getResourceAsStream("/images/update2.png"));
+        Image updateImage = new Image(getClass().getResourceAsStream("/application/images/update1.png"));
+        Image updateHovered = new Image(getClass().getResourceAsStream("/application/images/update2.png"));
         ImageView update = new ImageView(updateImage);
 
         update.setFitHeight(100);
@@ -678,8 +678,8 @@ public class Main extends Application {
         update.setOnMouseExited(e -> {update.setImage(updateImage);});
 
         // image to use as check status button
-        Image checkImage = new Image(getClass().getResourceAsStream("/images/check2.png"));
-        Image checkHovered = new Image(getClass().getResourceAsStream("/images/check1.png"));
+        Image checkImage = new Image(getClass().getResourceAsStream("/application/images/check2.png"));
+        Image checkHovered = new Image(getClass().getResourceAsStream("/application/images/check1.png"));
         ImageView check = new ImageView(checkImage);
 
         check.setFitHeight(100);
@@ -698,8 +698,8 @@ public class Main extends Application {
         bottomPane.setAlignment(Pos.CENTER);
 
         // image to use as log out button
-        Image logOutImage = new Image(getClass().getResourceAsStream("/images/logout1.png"));
-        Image logOutHovered = new Image(getClass().getResourceAsStream("/images/logout2.png"));
+        Image logOutImage = new Image(getClass().getResourceAsStream("/application/images/logout1.png"));
+        Image logOutHovered = new Image(getClass().getResourceAsStream("/application/images/logout2.png"));
         ImageView logOut = new ImageView(logOutImage);
 
         logOut.setFitHeight(100);
@@ -768,8 +768,8 @@ public class Main extends Application {
         tfName.setFont(Font.font(16));
 
         // image to use as submit name button
-        Image submitImage = new Image(getClass().getResourceAsStream("/images/submit1.png"));
-        Image submitHovered = new Image(getClass().getResourceAsStream("/images/submit2.png"));
+        Image submitImage = new Image(getClass().getResourceAsStream("/application/images/submit1.png"));
+        Image submitHovered = new Image(getClass().getResourceAsStream("/application/images/submit2.png"));
         ImageView submit = new ImageView(submitImage);
 
         submit.setFitHeight(100);
@@ -794,8 +794,8 @@ public class Main extends Application {
         pane.setAlignment(Pos.BASELINE_CENTER);
 
         // image to use as done button
-        Image doneImage = new Image(getClass().getResourceAsStream("/images/done1.png"));
-        Image doneHovered = new Image(getClass().getResourceAsStream("/images/done2.png"));
+        Image doneImage = new Image(getClass().getResourceAsStream("/application/images/done1.png"));
+        Image doneHovered = new Image(getClass().getResourceAsStream("/application/images/done2.png"));
         ImageView done = new ImageView(doneImage);
 
         done.setFitHeight(100);
@@ -867,8 +867,8 @@ public class Main extends Application {
         pane.add(interactions, 1, 2);
 
         // image to use as done button
-        Image doneImage = new Image(getClass().getResourceAsStream("/images/done1.png"));
-        Image doneHovered = new Image(getClass().getResourceAsStream("/images/done2.png"));
+        Image doneImage = new Image(getClass().getResourceAsStream("/application/images/done1.png"));
+        Image doneHovered = new Image(getClass().getResourceAsStream("/application/images/done2.png"));
         ImageView done = new ImageView(doneImage);
 
         done.setFitHeight(100);
