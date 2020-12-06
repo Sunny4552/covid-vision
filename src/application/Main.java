@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -108,6 +109,7 @@ public class Main extends Application {
 	public VBox createHomePane() {
 
 		VBox pane = new VBox();
+		pane.setStyle("-fx-background-color: white;");
 		pane.setAlignment(Pos.CENTER);
 		pane.setSpacing(10);
 
@@ -158,6 +160,7 @@ public class Main extends Application {
 
 		// the overarching hbox container for this page
 		HBox pane = new HBox();
+		pane.setStyle("-fx-background-color: white;");
 		pane.setAlignment(Pos.CENTER);
 		pane.setSpacing(50);
 
@@ -351,6 +354,7 @@ public class Main extends Application {
 
 		// the overarching hbox container for this page
 		HBox pane = new HBox();
+		pane.setStyle("-fx-background-color: white;");
 		pane.setAlignment(Pos.CENTER);
 		pane.setSpacing(50);
 
@@ -478,6 +482,7 @@ public class Main extends Application {
 
 		// the overarching hbox container for this page
 		HBox pane = new HBox();
+		pane.setStyle("-fx-background-color: white;");
 		pane.setAlignment(Pos.CENTER);
 		pane.setSpacing(50);
 
@@ -654,7 +659,7 @@ public class Main extends Application {
 	public BorderPane createLoggedInPane() {
 
 		BorderPane pane = new BorderPane();
-
+		pane.setStyle("-fx-background-color: white;");
 		// default message for the center
 		VBox defaultMessage = new VBox();
 		defaultMessage.setAlignment(Pos.CENTER);
@@ -783,6 +788,7 @@ public class Main extends Application {
 
 		// holds section for update status and add interactions
 		VBox vBox = new VBox();
+		vBox.setStyle("-fx-background-color: white;");
 		vBox.setAlignment(Pos.CENTER);
 		vBox.setSpacing(100);
 		vBox.setPadding(new Insets(50, 0, 50, 0));
@@ -905,6 +911,7 @@ public class Main extends Application {
 	public Pane createCheckPane() {
 
 		VBox vBox = new VBox();
+		vBox.setStyle("-fx-background-color: white;");
 		vBox.setAlignment(Pos.CENTER);
 		vBox.setSpacing(50);
 		vBox.setPadding(new Insets(50, 0, 50, 0));
