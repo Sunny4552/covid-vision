@@ -79,17 +79,6 @@ public class User {
 	}
 
 	/**
-	 * Checks that the age entered is in the correct format.
-	 * 
-	 * @param age The age the user entered.
-	 * @return True if the age is in the correct format.
-	 */
-	public static boolean validAge(int age) {
-		// assume that valid age is: 0 <= age <= 150
-		return age >= 0 && age <= 150;
-	}
-
-	/**
 	 * Returns the User as a string
 	 */
 	@Override

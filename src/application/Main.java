@@ -610,7 +610,7 @@ public class Main extends Application {
 		defaultMessage.setAlignment(Pos.CENTER);
 		defaultMessage.setSpacing(20);
 
-		Text selectTitle = new Text("Select one of the options above to display here!");
+		Text selectTitle = new Text("Select one of the options above!");
 		selectTitle.setFont(Font.font("", FontWeight.BOLD, 24));
 		selectTitle.setUnderline(true);
 
@@ -619,10 +619,10 @@ public class Main extends Application {
 		updateBox.setAlignment(Pos.CENTER);
 
 		// description about the Update button at top
-		Text updateTitle = new Text("Update COVID-19 Status/Interactions");
+		Text updateTitle = new Text("Update COVID-19 Status and Interactions");
 		updateTitle.setFont(Font.font("", FontWeight.BOLD, 18));
 		updateTitle.setTextAlignment(TextAlignment.CENTER);
-		Text updateDescription = new Text("Update your COVID-19 Status, and add people who you have interacted " +
+		Text updateDescription = new Text("Update your COVID-19 test status, and add people who you have interacted " +
 			"with in the last 14 days.");
 		updateDescription.setFont(Font.font("", FontPosture.ITALIC, 18));
 		updateDescription.setWrappingWidth(400);
