@@ -54,8 +54,6 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
-		System.out.println(Main.class.getResource("/").getPath());
 		
 		// set stage
 		stage = primaryStage;
@@ -624,7 +622,7 @@ public class Main extends Application {
 		Text updateTitle = new Text("Update COVID-19 Status/Interactions");
 		updateTitle.setFont(Font.font("", FontWeight.BOLD, 18));
 		updateTitle.setTextAlignment(TextAlignment.CENTER);
-		Text updateDescription = new Text("Update your COVID-19 Status and add people who you've interacted " +
+		Text updateDescription = new Text("Update your COVID-19 Status, and add people who you have interacted " +
 			"with in the last 14 days.");
 		updateDescription.setFont(Font.font("", FontPosture.ITALIC, 18));
 		updateDescription.setWrappingWidth(400);
@@ -639,8 +637,7 @@ public class Main extends Application {
 		Text checkTitle = new Text("Check COVID-19 Exposure Status");
 		checkTitle.setFont(Font.font("", FontWeight.BOLD, 18));
 		checkTitle.setTextAlignment(TextAlignment.CENTER);
-		Text checkDescription = new Text("See if anyone on your list of interactions has been exposed to or " +
-			"interacted with others who have been exposed to COVID-19.");
+		Text checkDescription = new Text("View your COVID-19 test status, degree of exposure, and interactions list.");
 		checkDescription.setFont(Font.font("", FontPosture.ITALIC, 18));
 		checkDescription.setWrappingWidth(400);
 		checkDescription.setTextAlignment(TextAlignment.CENTER);
@@ -934,8 +931,9 @@ public class Main extends Application {
 	private void goCheckStatus() {
 
 		checkPane = createCheckPane();
-		sceneCheck = new Scene(checkPane, 750, 500);
-		stage.setScene(sceneCheck);
+		//sceneCheck = new Scene(checkPane, 750, 500);
+		//stage.setScene(sceneCheck);
+		stage.getScene().setRoot(checkPane);
 		stage.show();
 
 	}
