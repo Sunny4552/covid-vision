@@ -5,6 +5,7 @@ import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -22,15 +23,27 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Screen;
 import javafx.scene.image.ImageView;
+
+//TODO Replace with T.K's GUI code
+
+// when login button, create User(info) with name, street, city state, and
+// zipcode, and then login(user)
+// when registerx new user, create User(info) with name, street, city state, and
+// zipcode, and then call login(user))
+// If login(info) fails (is false), continue to get covid status,
+// interactions(exact input from user), and call registerUser(user, status,
+// interactions)
 
 public class Main extends Application {
 
-	private ExposureTracker expTracker = new ExposureTracker("FileDatabase.txt");
+	private ExposureTracker expTrcker = new ExposureTracker("FileDatabase.txt");
 	private User currentSystemUser = null; // stores user currently logged in
-
+	
+	// make fill screen
+	Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
 	// stage
 	Stage stage;
 
@@ -54,7 +67,7 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		
+
 		// set stage
 		stage = primaryStage;
 
@@ -65,9 +78,7 @@ public class Main extends Application {
 		loginPane = createLoginPane();
 		loggedInPane = createLoggedInPane();
 		updatePane = createUpdatePane();
-
-		// make fill screen
-		Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+		// checkPane = createCheckPane();
 
 		// set scenes
 		sceneHome = new Scene(homePane, screenBounds.getWidth(), screenBounds.getHeight());
@@ -94,7 +105,7 @@ public class Main extends Application {
 	/* methods that create the scenes */
 
 	// creates the default homepage where user can login/register
-	private VBox createHomePane() {
+	public VBox createHomePane() {
 
 		VBox pane = new VBox();
 		pane.setAlignment(Pos.CENTER);
@@ -105,7 +116,7 @@ public class Main extends Application {
 
 		HBox buttonContainer = new HBox();
 		buttonContainer.setAlignment(Pos.CENTER);
-
+		
 		// image for logo and welcome
 		Image welcomeImage = new Image(getClass().getResourceAsStream("/images/welcome2.png"));
 		ImageView welcome = new ImageView(welcomeImage);
@@ -115,7 +126,7 @@ public class Main extends Application {
 		Image registerHovered = new Image(getClass().getResourceAsStream("/images/register2.png"));
 		ImageView register = new ImageView(registerImage);
 
-		register.setFitHeight(100);
+	    register.setFitHeight(100);
 		register.setPreserveRatio(true);
 		register.setOnMouseClicked(e -> {goRegister();});
 
@@ -133,7 +144,7 @@ public class Main extends Application {
 
 		login.setOnMouseEntered(e -> {login.setImage(loginHovered);});
 		login.setOnMouseExited(e -> {login.setImage(loginImage);});
-
+		
 		buttonContainer.getChildren().addAll(register, login);
 
 		pane.getChildren().addAll(welcome, buttonContainer);
@@ -143,7 +154,7 @@ public class Main extends Application {
 	}
 
 	// creates the first register page
-	private HBox createRegisterPane1() {
+	public HBox createRegisterPane1() {
 
 		// the overarching hbox container for this page
 		HBox pane = new HBox();
@@ -190,8 +201,8 @@ public class Main extends Application {
 		tfName.setFont(Font.font(16));
 		tfName.setPromptText("Enter first and last name.");
 		grid.add(tfName, 1, 0);
-	//        String value1 = tfName.getText();
-	//        System.out.println(value1);
+//        String value1 = tfName.getText();
+//        System.out.println(value1);
 
 		TextField tfAddress = new TextField();
 		tfAddress.setFont(Font.font(16));
@@ -231,10 +242,12 @@ public class Main extends Application {
 		backButton.setOnMouseExited(e -> {backButton.setImage(backImage);});
 
 		Label lblError = new Label("");
+		Label focus = new Label("");
 		lblError.setFont(Font.font(16));
 		GridPane.setHalignment(lblError, HPos.LEFT);
 		grid.add(lblError, 1, 5);
-
+		grid.add(focus, 0, 5);
+		
 		// image to use as next button
 		Image nextImage = new Image(getClass().getResourceAsStream("/images/next1.png"));
 		Image nextHovered = new Image(getClass().getResourceAsStream("/images/next2.png"));
@@ -242,61 +255,82 @@ public class Main extends Application {
 
 		nextButton.setFitHeight(100);
 		nextButton.setPreserveRatio(true);
-		nextButton.setOnMouseClicked(e -> {
-		    String valName = tfName.getText();
-		    String valAddress = tfAddress.getText();
-		    String valCity = tfCity.getText();
-		    String valState = tfState.getText();
-		    String valZip = tfZip.getText();
-		    User testName = new User(valName);
-
-		    //if one of the fields are empty
-		    if(valName.isEmpty() || valAddress.isEmpty() || valCity.isEmpty() ||
-			    valState.isEmpty() || valZip.isEmpty())
-		    {
-			lblError.setText("FIELD(S) ARE EMPTY");
-		    }
-
-		    //if name is in wrong format
-		    else if(!User.validName(valName))
-		    {
-			tfName.clear();
-			tfName.setPromptText("FULL NAME W/ SPACES");
-		    }
-
-		    //if zip code is in wrong format
-		    else if(!validZipCode(valZip))
-		    {
-			tfZip.clear();
-			tfZip.setPromptText("ENTER ONLY 5 DIGITS");
-		    }
-
-		    //if state abbreviation is in wrong format
-		    else if (valState.length() !=2) {
-			tfState.clear();
-			tfZip.setPromptText("ENTER ONLY STATE ABBREVIATIONS");
-		    }
-
-		    //if everything works
-		    else
-		    {
-			int value5 = Integer.parseInt(valZip);
-	currentSystemUser = new User(valName, valAddress, valCity, valState, value5);
-			lblError.setText("");
-			tfName.clear();
-			tfAddress.clear();
-			tfCity.clear();
-			tfState.clear();
-			tfZip.clear();
-			tfName.setPromptText("Enter first and last name.");
-			tfZip.setPromptText("Enter zip code.");
-			goNext();
-		    }
-		    //System.out.println(loggedInUser.toString());
-		});
-
+		
 		nextButton.setOnMouseEntered(e -> {nextButton.setImage(nextHovered);});
 		nextButton.setOnMouseExited(e -> {nextButton.setImage(nextImage);});
+
+		
+		nextButton.setOnMouseClicked(e -> {
+			focus.requestFocus();
+			String valName = tfName.getText();
+			String valAddress = tfAddress.getText();
+			String valCity = tfCity.getText();
+			String valState = tfState.getText();
+			String valZip = tfZip.getText();
+			User testName = new User(valName);
+
+			// if one of the fields are empty
+			if (valName.isEmpty() || valAddress.isEmpty() || valCity.isEmpty() || valState.isEmpty()
+					|| valZip.isEmpty()) {
+				lblError.setText("FIELD(S) ARE EMPTY");
+			}
+
+			// if name is in wrong format
+			else if (!User.validName(valName)) {
+				tfName.clear();
+				tfName.setPromptText("FULL NAME W/ SPACES");
+			}
+
+			// if zip code is in wrong format
+			else if (!validZipCode(valZip)) {
+				tfZip.clear();
+				tfZip.setPromptText("ENTER ONLY 5 DIGITS");
+			}
+
+			// if state abbreviation is in wrong format
+			else if (valState.length() != 2) {
+				tfState.clear();
+				tfState.setPromptText("ENTER ONLY STATE ABBREVIATIONS");
+			}
+			
+			// if address is in the wrong format 
+			else if(!validAddress(valAddress))
+			{
+				tfAddress.clear();
+				tfAddress.setPromptText("NUM + STREET");
+			}
+			// if everything works
+			else {
+				int value5 = Integer.parseInt(tfZip.getText());
+				User attemptRegisterUser = new User(valName, valAddress, valCity, valState, value5);
+				if (!couldLogin(attemptRegisterUser)) {
+					currentSystemUser = attemptRegisterUser;
+					lblError.setText("");
+					tfName.clear();
+					tfAddress.clear();
+					tfCity.clear();
+					tfState.clear();
+					tfZip.clear();
+					tfName.setPromptText("Enter first and last name.");
+					tfZip.setPromptText("Enter zip code.");
+					goNext();
+				} else {
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("Registration Error");
+					alert.setHeaderText("The information entered matches an existing registered user.");
+					alert.setContentText("Directing to page where you can login.");
+					tfName.clear();
+					tfAddress.clear();
+					tfCity.clear();
+					tfState.clear();
+					tfZip.clear();
+					alert.showAndWait();
+					goLogin();
+				}
+			}
+			// System.out.println(loggedInUser.toString());
+		});
+
 
 		buttonContainer.getChildren().addAll(backButton, nextButton);
 
@@ -313,7 +347,7 @@ public class Main extends Application {
 	}
 
 	// creates the next register page that the first goes to next
-	private HBox createRegisterPane2() {
+	public HBox createRegisterPane2() {
 
 		// the overarching hbox container for this page
 		HBox pane = new HBox();
@@ -330,7 +364,9 @@ public class Main extends Application {
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
 		grid.setVgap(10);
-
+		
+		Label focus = new Label("");
+		grid.add(focus, 2, 0);
 		// labels
 		Label lblStatus = new Label("COVID-19 Status");
 		lblStatus.setFont(Font.font(16));
@@ -354,9 +390,15 @@ public class Main extends Application {
 		MenuItem testNeg = new MenuItem("Tested negative");
 
 		// need to force user to choose a status
-		notTested.setOnAction(e -> {chooseStatus.setText("Not tested");});
-		testPos.setOnAction(e -> {chooseStatus.setText("Tested positive");});
-		testNeg.setOnAction(e -> {chooseStatus.setText("Tested negative");});
+		notTested.setOnAction(e -> {
+			chooseStatus.setText("Not tested");
+		});
+		testPos.setOnAction(e -> {
+			chooseStatus.setText("Tested positive");
+		});
+		testNeg.setOnAction(e -> {
+			chooseStatus.setText("Tested negative");
+		});
 
 		chooseStatus.getItems().addAll(notTested, testNeg, testPos);
 		grid.add(chooseStatus, 1, 0);
@@ -364,7 +406,7 @@ public class Main extends Application {
 		// text area to enter interactions
 		TextArea tfInteractions = new TextArea();
 		tfInteractions.setFont(Font.font(16));
-		tfInteractions.setPrefSize(200,200);
+		tfInteractions.setPrefSize(200, 200);
 		tfInteractions.setWrapText(true);
 		tfInteractions.setPromptText("FirstName LastName, FirstName2 LastName2, ...");
 		grid.add(tfInteractions, 1, 1);
@@ -393,29 +435,31 @@ public class Main extends Application {
 
 		registerButton.setFitHeight(100);
 		registerButton.setPreserveRatio(true);
-		registerButton.setOnMouseClicked(e -> {
-		    String value1 = chooseStatus.getText();
-		    String value2 = tfInteractions.getText();
-
-		    if(validInteractionList(value2) && validChooseStatus(value1))
-		    {
-			registerUser(currentSystemUser, value1, value2);
-			chooseStatus.setText("Choose status...");
-			tfInteractions.clear();
-			goLoggedIn();
-		    }
-		    else
-		    {
-
-			tfInteractions.clear();
-			tfInteractions.setPromptText("INVALID FORMAT");
-		    }
-		});
-
+		
 		registerButton.setOnMouseEntered(e -> {registerButton.setImage(registerHovered);});
 		registerButton.setOnMouseExited(e -> {registerButton.setImage(registerImage);});
+		
+		registerButton.setOnMouseClicked(e -> {
+			focus.requestFocus();
+			String value1 = chooseStatus.getText();
+			String value2 = tfInteractions.getText();
+
+			if (validInteractionList(value2) && validChooseStatus(value1)) {
+				registerUser(currentSystemUser, value1, value2);
+				chooseStatus.setText("Choose status...");
+				tfInteractions.clear();
+				goLoggedIn();
+			} else {
+
+				tfInteractions.clear();
+				tfInteractions.setPromptText("INVALID FORMAT");
+			}
+		});
+		
+
 
 		buttonContainer.getChildren().addAll(backButton, registerButton);
+
 
 		// a vbox to contain grid and buttonContainer
 		VBox vBox = new VBox();
@@ -430,7 +474,7 @@ public class Main extends Application {
 	}
 
 	// creates the page where user can login
-	private HBox createLoginPane() {
+	public HBox createLoginPane() {
 
 		// the overarching hbox container for this page
 		HBox pane = new HBox();
@@ -503,6 +547,12 @@ public class Main extends Application {
 		buttonContainer.setAlignment(Pos.TOP_RIGHT);
 		buttonContainer.setSpacing(5);
 
+//		Button btnReturnToMain = new Button("Return to Main Menu");
+//		btnReturnToMain.setFont(Font.font(16));
+//		btnReturnToMain.setOnMouseClicked(e -> {
+//			goMainMenu();
+//		});
+		
 		// image to use as back button
 		Image backImage = new Image(getClass().getResourceAsStream("/images/back1.png"));
 		Image backHovered = new Image(getClass().getResourceAsStream("/images/back2.png"));
@@ -525,65 +575,65 @@ public class Main extends Application {
 
 		loginButton.setOnMouseEntered(e -> {loginButton.setImage(loginHovered);});
 		loginButton.setOnMouseExited(e -> {loginButton.setImage(loginImage);});
-
+		
 		Label lblError = new Label("");
 		lblError.setFont(Font.font(16));
 		GridPane.setHalignment(lblError, HPos.LEFT);
 		grid.add(lblError, 1, 5);
+		Label focus = new Label("");
+		grid.add(focus, 0, 5);
 
+//		Button btnLogin = new Button("Login");
+//		btnLogin.setFont(Font.font(16));
 		loginButton.setOnMouseClicked(e -> {
-		    String valName = tfName.getText();
-		    String valAddress = tfAddress.getText();
-		    String valCity = tfCity.getText();
-		    String valState = tfState.getText();
-		    
-		    if(valName.isEmpty() || valAddress.isEmpty() || valCity.isEmpty() ||
-			    valState.isEmpty() || tfZip.getText().isEmpty())
-		    {
-			lblError.setText("FIELD(S) ARE EMPTY");
-		    }
-		    else if(!User.validName(valName))
-		    {
-			tfName.clear();
-			tfName.setPromptText("FULL NAME W/ SPACES");
-		    }
-		    else if(!validZipCode(tfZip.getText()))
-		    {
-			tfZip.clear();
-			tfZip.setPromptText("ENTER ONLY 5 DIGITS");
-		    }
-		    else
-		    {
+			focus.requestFocus();
+			String valName = tfName.getText();
+			String valAddress = tfAddress.getText();
+			String valCity = tfCity.getText();
+			String valState = tfState.getText();
+			User testName = new User(valName);
+			if (valName.isEmpty() || valAddress.isEmpty() || valCity.isEmpty() || valState.isEmpty()
+					|| tfZip.getText().isEmpty()) {
+				lblError.setText("FIELD(S) ARE EMPTY");
+			} else if (!User.validName(valName)) {
+				tfName.clear();
+				tfName.setPromptText("FULL NAME W/ SPACES");
+			} else if (!validZipCode(tfZip.getText())) {
+				tfZip.clear();
+				tfZip.setPromptText("ENTER ONLY 5 DIGITS");
+				
+			} else if(!validAddress(valAddress)){
+				tfAddress.clear();
+				tfAddress.setPromptText("NUM + STREET");
+			}else {
 
-			int value5 = Integer.parseInt(tfZip.getText());
-			currentSystemUser = new User(valName, valAddress, valCity, valState, value5);
-			if(couldLogin(currentSystemUser))
-			{
-			    lblError.setText("");
-			    tfName.clear();
-			    tfAddress.clear();
-			    tfCity.clear();
-			    tfState.clear();
-			    tfZip.clear();
-			    tfName.setPromptText("Enter first and last name.");
-			    tfZip.setPromptText("Enter zip code.");
-			    goLoggedIn();
+				int value5 = Integer.parseInt(tfZip.getText());
+				User attemptLoginUser = new User(valName, valAddress, valCity, valState, value5);
+				if (couldLogin(attemptLoginUser)) {
+					login(attemptLoginUser);
+					lblError.setText("");
+					tfName.clear();
+					tfAddress.clear();
+					tfCity.clear();
+					tfState.clear();
+					tfZip.clear();
+					tfName.setPromptText("Enter first and last name.");
+					tfZip.setPromptText("Enter zip code.");
+					goLoggedIn();
+				} else {
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("Login Error");
+					alert.setHeaderText("The information entered is not a valid user.");
+					alert.setContentText("Directing to page where you can register.");
+					tfName.clear();
+					tfAddress.clear();
+					tfCity.clear();
+					tfState.clear();
+					tfZip.clear();
+					alert.showAndWait();
+					goRegister();
+				}
 			}
-			else
-			{
-			    Alert alert = new Alert(AlertType.INFORMATION);
-			    alert.setTitle("Login Error");
-			    alert.setHeaderText("The information entered is not a valid user.");
-			    alert.setContentText("Directing to page where you can register.");
-			    tfName.clear();
-			    tfAddress.clear();
-			    tfCity.clear();
-			    tfState.clear();
-			    tfZip.clear();
-			    alert.showAndWait();
-			    goRegister();
-			}
-		    }
 		});
 
 		buttonContainer.getChildren().addAll(back, loginButton);
@@ -601,7 +651,7 @@ public class Main extends Application {
 	}
 
 	// creates the page displayed when a user finishes registering/logging in
-	private BorderPane createLoggedInPane() {
+	public BorderPane createLoggedInPane() {
 
 		BorderPane pane = new BorderPane();
 
@@ -623,7 +673,7 @@ public class Main extends Application {
 		updateTitle.setFont(Font.font("", FontWeight.BOLD, 18));
 		updateTitle.setTextAlignment(TextAlignment.CENTER);
 		Text updateDescription = new Text("Update your COVID-19 test status, and add people who you have interacted " +
-			"with in the last 14 days.");
+				"with in the last 14 days.");
 		updateDescription.setFont(Font.font("", FontPosture.ITALIC, 18));
 		updateDescription.setWrappingWidth(400);
 		updateDescription.setTextAlignment(TextAlignment.CENTER);
@@ -637,7 +687,8 @@ public class Main extends Application {
 		Text checkTitle = new Text("Check COVID-19 Exposure Status");
 		checkTitle.setFont(Font.font("", FontWeight.BOLD, 18));
 		checkTitle.setTextAlignment(TextAlignment.CENTER);
-		Text checkDescription = new Text("View your COVID-19 test status, degree of exposure, and interactions list.");
+		Text checkDescription = new Text("See if anyone on your list of interactions has been exposed to or "
+				+ "interacted with others who have been exposed to COVID-19.");
 		checkDescription.setFont(Font.font("", FontPosture.ITALIC, 18));
 		checkDescription.setWrappingWidth(400);
 		checkDescription.setTextAlignment(TextAlignment.CENTER);
@@ -653,18 +704,31 @@ public class Main extends Application {
 		hBoxTop.setSpacing(5);
 		hBoxTop.setPadding(new Insets(20, 0, 0, 0));
 
+//		Button btnUpdateStatus = new Button("Update COVID-19 Status/Interactions");
+//		btnUpdateStatus.setFont(Font.font(16));
+//		btnUpdateStatus.setOnMouseClicked(e -> {
+//			goUpdateStatus();
+//		});
+//		
 		// image to use as update button
 		Image updateImage = new Image(getClass().getResourceAsStream("/images/update1.png"));
 		Image updateHovered = new Image(getClass().getResourceAsStream("/images/update2.png"));
 		ImageView update = new ImageView(updateImage);
-
+		
 		update.setFitHeight(100);
 		update.setPreserveRatio(true);
 		update.setOnMouseClicked(e -> {goUpdateStatus();});
 
 		update.setOnMouseEntered(e -> {update.setImage(updateHovered);});
 		update.setOnMouseExited(e -> {update.setImage(updateImage);});
-
+		
+//		Button btnCheckStatus = new Button("Check COVID-19 Exposure Status");
+//		btnCheckStatus.setFont(Font.font(16));
+//		
+//		btnCheckStatus.setOnMouseClicked(e -> {
+//			goCheckStatus();
+//		});
+		
 		// image to use as check status button
 		Image checkImage = new Image(getClass().getResourceAsStream("/images/check2.png"));
 		Image checkHovered = new Image(getClass().getResourceAsStream("/images/check1.png"));
@@ -684,6 +748,13 @@ public class Main extends Application {
 		// put a Return to Main Menu at the bottom of the scene
 		StackPane bottomPane = new StackPane();
 		bottomPane.setAlignment(Pos.CENTER);
+//		Button btnReturnMain = new Button("Return to Main Menu");
+//		btnReturnMain.setFont(Font.font(16));
+//		btnReturnMain.setOnMouseClicked(e -> {
+//			goMainMenu();
+//		});
+//
+//		bottomPane.getChildren().add(btnReturnMain);
 
 		// image to use as log out button
 		Image logOutImage = new Image(getClass().getResourceAsStream("/images/logout1.png"));
@@ -704,11 +775,11 @@ public class Main extends Application {
 
 		// return the completed pane
 		return pane;
-		
+
 	}
 
 	// creates the page for user to update their status
-	private VBox createUpdatePane() {
+	public VBox createUpdatePane() {
 
 		// holds section for update status and add interactions
 		VBox vBox = new VBox();
@@ -734,9 +805,15 @@ public class Main extends Application {
 		MenuItem testNeg = new MenuItem("Tested negative");
 
 		// update the actions to update in DB too
-		notTested.setOnAction(e -> {chooseStatus.setText("Not tested");});
-		testPos.setOnAction(e -> {chooseStatus.setText("Tested positive");});
-		testNeg.setOnAction(e -> {chooseStatus.setText("Tested negative");});
+		notTested.setOnAction(e -> {
+			chooseStatus.setText("Not tested");
+		});
+		testPos.setOnAction(e -> {
+			chooseStatus.setText("Tested positive");
+		});
+		testNeg.setOnAction(e -> {
+			chooseStatus.setText("Tested negative");
+		});
 
 		chooseStatus.getItems().addAll(notTested, testNeg, testPos);
 
@@ -765,14 +842,22 @@ public class Main extends Application {
 
 		submit.setOnMouseEntered(e -> {submit.setImage(submitHovered);});
 		submit.setOnMouseExited(e -> {submit.setImage(submitImage);});
-
+		
+//		Button btSubmit = new Button("Submit Name");
+//		btSubmit.setFont(Font.font(16));
+		
 		submit.setOnMouseClicked(e -> {
-		    String interaction = tfName.getText();
-
-		    expTracker.addInteractions(currentSystemUser, interaction);
-		    //chooseStatus.setText("Choose status...");
-		    tfName.clear();
-		}); // fill in later -- add name to database
+			String interaction = tfName.getText();
+			String[] split = interaction.split(" ");
+			if (split.length == 2) {
+				addInteractions(interaction);
+			} else {
+				tfName.clear();
+				tfName.setPromptText("ENTER FIRST AND LAST NAME");
+			}
+			// chooseStatus.setText("Choose status...");
+			tfName.clear();
+		});
 
 		hBox.getChildren().addAll(lblName, tfName, submit);
 
@@ -781,6 +866,17 @@ public class Main extends Application {
 		pane.setPadding(new Insets(100, 0, 0, 0));
 		pane.setAlignment(Pos.BASELINE_CENTER);
 
+//		// returns to loggedInPane; make so "Done" updates status if selected (works)
+//		Button btReturn = new Button("Done");
+//		btReturn.setFont(Font.font(16));
+//		btReturn.setAlignment(Pos.CENTER);
+//		btReturn.setOnMouseClicked(e -> {
+//			if (validChooseStatus(chooseStatus.getText())) {
+//				updateTestStatus(chooseStatus.getText());
+//			}
+//			goLoggedIn();
+//		});
+		
 		// image to use as done button
 		Image doneImage = new Image(getClass().getResourceAsStream("/images/done1.png"));
 		Image doneHovered = new Image(getClass().getResourceAsStream("/images/done2.png"));
@@ -806,7 +902,7 @@ public class Main extends Application {
 	}
 
 	// creates the page to display user's exposure status
-	private Pane createCheckPane() {
+	public Pane createCheckPane() {
 
 		VBox vBox = new VBox();
 		vBox.setAlignment(Pos.CENTER);
@@ -832,28 +928,32 @@ public class Main extends Application {
 		Label lblInteractionList = new Label("Interactions:");
 		lblInteractionList.setFont(Font.font("", FontWeight.BOLD, 16));
 		GridPane.setHalignment(lblInteractionList, HPos.RIGHT);
-		pane.add(lblInteractionList,0,2);
+		pane.add(lblInteractionList, 0, 2);
 
 		// actual values
 		Text testStatus = new Text();
 		testStatus.setFont(Font.font(16));
-		// use testStatus.[method that returns test status value]
-		testStatus.setText("I'm FINE.");
+		testStatus.setText(checkTestStatus());
 		pane.add(testStatus, 1, 0);
 
 		Text exposureStatus = new Text();
 		exposureStatus.setFont(Font.font(16));
-		//status.setText(checkExposureStatus());
-		exposureStatus.setText("I'm FINE.");
+		exposureStatus.setText(checkExposureStatus());
 		pane.add(exposureStatus, 1, 1);
 
 		Text interactions = new Text();
 		interactions.setFont(Font.font(16));
-		//interactions.setText(checkPastInteractions());
-		interactions.setText("LOL ZERO FRIENDS");
+		interactions.setText(checkPastInteractions());
 		interactions.setWrappingWidth(400);
 		pane.add(interactions, 1, 2);
 
+//		Button btReturn = new Button("Done");
+//		btReturn.setFont(Font.font(16));
+//		btReturn.setOnMouseClicked(e -> {
+//			goLoggedIn();
+//		});
+//		btReturn.setAlignment(Pos.CENTER);
+		
 		// image to use as done button
 		Image doneImage = new Image(getClass().getResourceAsStream("/images/done1.png"));
 		Image doneHovered = new Image(getClass().getResourceAsStream("/images/done2.png"));
@@ -880,7 +980,7 @@ public class Main extends Application {
 	/* methods for buttons to go to a certain scene */
 
 	// for the button that sends user back to login/register screen
-	private void goMainMenu() {
+	public void goMainMenu() {
 
 		stage.setScene(sceneHome);
 		stage.show();
@@ -888,7 +988,7 @@ public class Main extends Application {
 	}
 
 	// for the button that sends user to first register page
-	private void goRegister() {
+	public void goRegister() {
 
 		stage.setScene(sceneRegister1);
 		stage.show();
@@ -896,7 +996,7 @@ public class Main extends Application {
 	}
 
 	// for the button that sends user to next register page
-	private void goNext() {
+	public void goNext() {
 
 		stage.setScene(sceneRegister2);
 		stage.show();
@@ -904,7 +1004,7 @@ public class Main extends Application {
 	}
 
 	// for the button that sends user to the login page
-	private void goLogin() {
+	public void goLogin() {
 
 		stage.setScene(sceneLogin);
 		stage.show();
@@ -913,14 +1013,14 @@ public class Main extends Application {
 
 	// for the button that logs the user in and sends them to the page to choose
 	// update/check status
-	private void goLoggedIn() {
+	public void goLoggedIn() {
 		stage.setScene(sceneLoggedIn);
 		stage.show();
 
 	}
 
 	// for the button so user can go update status and interactions
-	private void goUpdateStatus() {
+	public void goUpdateStatus() {
 
 		stage.setScene(sceneUpdate);
 		stage.show();
@@ -928,12 +1028,12 @@ public class Main extends Application {
 	}
 
 	// lets user check their status and interactions if they are logged in
-	private void goCheckStatus() {
+	public void goCheckStatus() {
 
 		checkPane = createCheckPane();
 		//sceneCheck = new Scene(checkPane, 750, 500);
-		//stage.setScene(sceneCheck);
-		stage.getScene().setRoot(checkPane);
+		sceneCheck = new Scene(checkPane, sceneLoggedIn.getWidth(), sceneLoggedIn.getHeight());
+		stage.setScene(sceneCheck);
 		stage.show();
 
 	}
@@ -941,18 +1041,18 @@ public class Main extends Application {
 	/**
 	 * Determines if login information matches a user in the database and if it
 	 * does, stores user identification information in loggedInUser.
-	 * @param currentUser User to check if could login
 	 *
+	 * @param user User to check if could login
 	 */
-	private void login(User currentUser) {
+	public void login(User currentUser) {
 		currentSystemUser = currentUser;
 		checkPane = createCheckPane();
 		sceneCheck = new Scene(checkPane, 750, 500);
 
 	}
 
-	private boolean couldLogin(User currentUser) {
-		if (expTracker.loginUser(currentUser)) {
+	public boolean couldLogin(User currentUser) {
+		if (expTrcker.loginUser(currentUser)) {
 			return true;
 		} else {
 			return false;
@@ -960,19 +1060,19 @@ public class Main extends Application {
 
 	}
 
-	private void registerUser(User user, String status, String interactions) {
+	public void registerUser(User user, String status, String interactions) {
 		interactions = interactions.replace("\n", "");
-		expTracker.registerNewUser(user, status.toUpperCase(), interactions.toUpperCase());
+		expTrcker.registerNewUser(user, status.toUpperCase(), interactions.toUpperCase());
 		checkPane = createCheckPane();
 		sceneCheck = new Scene(checkPane, 750, 500);
 	}
 
-	private String checkExposureStatus() {
-		return expTracker.getExposureStatus(currentSystemUser);
+	public String checkExposureStatus() {
+		return expTrcker.getExposureStatus(currentSystemUser);
 	}
 
-	private String checkPastInteractions() {
-		String[] interactionsList = expTracker.getUserInteractions(currentSystemUser);
+	public String checkPastInteractions() {
+		String[] interactionsList = expTrcker.getUserInteractions(currentSystemUser);
 		String concat = "";
 
 		for (int i = 0; i < interactionsList.length; i++) {
@@ -983,21 +1083,21 @@ public class Main extends Application {
 		return concat;
 	}
 
-	private String checkTestStatus() {
-		return expTracker.getTestStatus(currentSystemUser);
+	public String checkTestStatus() {
+		return expTrcker.getTestStatus(currentSystemUser);
 	}
 
-	private void updateTestStatus(String status) {
+	public void updateTestStatus(String status) {
 		checkPane = createCheckPane();
 		sceneCheck = new Scene(checkPane, 750, 500);
-		expTracker.updateTestStatus(currentSystemUser, status.toUpperCase());
+		expTrcker.updateTestStatus(currentSystemUser, status.toUpperCase());
 	}
 
-	private void addInteractions(String interactions) {
-		expTracker.addInteractions(currentSystemUser, interactions.toUpperCase());
+	public void addInteractions(String interactions) {
+		expTrcker.addInteractions(currentSystemUser, interactions.toUpperCase());
 	}
 
-	private boolean validZipCode(String str) {
+	public boolean validZipCode(String str) {
 		int length = str.length();
 		if (length != 5) {
 			return false;
@@ -1017,16 +1117,25 @@ public class Main extends Application {
 		return true;
 	}
 
-	private boolean validChooseStatus(String status) {
+	public boolean validChooseStatus(String status) {
 		if (status != "Choose status...") {
 			return true;
 		} else
 			return false;
 	}
 
-	private boolean validInteractionList(String interactionList) {
+	public boolean validInteractionList(String interactionList) {
 		int count = 0;
-
+//		//corner case where no commas in string (removed)
+//		if(interactionList.indexOf(",", count) == -1)
+//			return false;
+		//If no Interactions had
+		if(interactionList.length() == 0)
+			return true;
+		//if only first name
+		if(interactionList.indexOf(" ", count) == -1)
+			return false;
+		
 		while (interactionList.indexOf(",", count) != -1) {
 			int currentComma = interactionList.indexOf(",", count);
 			// checks if there is a space between first/last names between commas
@@ -1050,7 +1159,7 @@ public class Main extends Application {
 		return true;
 	}
     
-    private boolean validAddress(String address)
+    public boolean validAddress(String address)
     {
     	//checks first case of address formatting
     	if(!address.contains(" "))
@@ -1058,6 +1167,8 @@ public class Main extends Application {
     	
     	//splits address to check num string
     	String[] split = address.split(" ");
+    	if(split.length < 2)
+    		return false;
     	String str = split[0];
 
     	for (int i = 0; i < str.length(); i++) {
