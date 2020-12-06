@@ -3,7 +3,8 @@ package application;
 import java.util.ArrayList;
 
 /**
- * Simulates a 
+ * Performs the main business rules processing, responds to the user's
+ * interactions, and determines what to write and read from the database.
  * 
  * @author Thi Nguyen, Minh Nguyen, Sunny Mistry, T.K. Bui
  *
@@ -231,7 +232,7 @@ public class ExposureTracker {
 		// read test status of user from database
 		String testStat = database.readTestStatus(user);
 
-		if (!exp.equals((""))){
+		if (!exp.equals((""))) {
 			// convert exposure status to word form
 			int exposure = Integer.parseInt(exp);
 			switch (exposure) {
@@ -380,7 +381,8 @@ public class ExposureTracker {
 				// parse into an integer
 				int intLineNum = Integer.parseInt(lineNum);
 
-				// update the exposure status of the user's interaction to the eposure status of
+				// update the exposure status of the user's interaction to the exposure status
+				// of
 				// the current user+1.
 				updateInteractionsExposure(intLineNum, exposureLevel + 1);
 			}

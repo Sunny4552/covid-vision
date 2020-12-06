@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 //NOTE: Database will be in the form
@@ -17,7 +16,8 @@ import java.util.List;
 //InteractionLineNum#1|InteractionLineNum#2|InteractionLineNum#3 ....
 
 /**
- * Simulates a database that stores user's names, test status, exposure status, and interactions.
+ * Simulates a database that stores user's names, test status, exposure status,
+ * and interactions.
  * 
  * @author Thi Nguyen, Minh Nguyen, Sunny Mistry, T.K. Bui
  *
@@ -458,7 +458,7 @@ public class UserDb {
 	 */
 	public String[] readInteractionsRecLineNum(int userRecLineNum) {
 
-		// retirnce the user's interactions' record line numbers
+		// retrieves the user's interactions' record line numbers
 		String interactionsRecLineNum = databaseLines.get((userRecLineNum + 4));
 
 		// Parse string into a String array, split where there is a |
@@ -701,10 +701,11 @@ public class UserDb {
 		// get the record line number of the only interaction of the second empty record
 		int interactRecNum2 = Integer.parseInt(rec2InteractionsLineNum[0]);
 
-		//read the record line numbers of the interactions of the original record (who created the second empty record)
+		// read the record line numbers of the interactions of the original record (who
+		// created the second empty record)
 		String interactRecNum = databaseLines.get(interactRecNum2 + 4);
 
-		//replace the empty record's line number with the merged record line number
+		// replace the empty record's line number with the merged record line number
 		interactRecNum = interactRecNum.replace("" + rec2LineNum, "" + rec1LineNum);
 		databaseLines.set(interactRecNum2 + 4, interactRecNum);
 

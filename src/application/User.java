@@ -20,7 +20,7 @@ public class User {
 		this.name = name.toUpperCase();
 		this.addr = addr;
 	}
-	
+
 	/**
 	 * Constructs a user object with a given name.
 	 * 
@@ -30,9 +30,11 @@ public class User {
 		this.name = name;
 		addr = new Address();
 	}
-	
+
 	/**
-	 * Constructs a user object with a given name, street, city, state, and zip code.
+	 * Constructs a user object with a given name, street, city, state, and zip
+	 * code.
+	 * 
 	 * @param name
 	 * @param streetAddr
 	 * @param city
@@ -40,7 +42,7 @@ public class User {
 	 * @param zipCode
 	 */
 	public User(String name, String streetAddr, String city, String state, int zipCode) {
-		this( name, new Address(streetAddr, city, state, zipCode));
+		this(name, new Address(streetAddr, city, state, zipCode));
 	}
 
 	/**
@@ -84,7 +86,7 @@ public class User {
 	@Override
 	public String toString() {
 		// concatenate all instance fields of user together
-		//return name + "|" + addr + "|" + age;
+		// return name + "|" + addr + "|" + age;
 		return name + "|" + addr;
 	}
 
