@@ -26,20 +26,10 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
 
-//TODO Replace with T.K's GUI code
-
-// when login button, create User(info) with name, street, city state, and
-// zipcode, and then login(user)
-// when registerx new user, create User(info) with name, street, city state, and
-// zipcode, and then call login(user))
-// If login(info) fails (is false), continue to get covid status,
-// interactions(exact input from user), and call registerUser(user, status,
-// interactions)
-
 public class Main extends Application {
 
-    private ExposureTracker expTrcker = new ExposureTracker("FileDatabase.txt");
-    private User loggedInUser = null; // stores user currently logged in
+    private ExposureTracker expTracker = new ExposureTracker("FileDatabase.txt");
+    private User currentSystemUser = null; // stores user currently logged in
 
     // stage
     Stage stage;
@@ -65,6 +55,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        System.out.println(Main.class.getResource("/").getPath());
+
         // set stage
         stage = primaryStage;
 
@@ -75,7 +67,6 @@ public class Main extends Application {
         loginPane = createLoginPane();
         loggedInPane = createLoggedInPane();
         updatePane = createUpdatePane();
-        checkPane = createCheckPane();
 
         // make fill screen
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -87,13 +78,13 @@ public class Main extends Application {
         sceneLogin = new Scene(loginPane, screenBounds.getWidth(), screenBounds.getHeight());
         sceneLoggedIn = new Scene(loggedInPane, screenBounds.getWidth(), screenBounds.getHeight());
         sceneUpdate = new Scene(updatePane, screenBounds.getWidth(), screenBounds.getHeight());
-        sceneCheck = new Scene(checkPane, screenBounds.getWidth(), screenBounds.getHeight());
+        //sceneCheck = new Scene(checkPane, screenBounds.getWidth(), screenBounds.getHeight());
 
         // start out at homepage
-        primaryStage.setTitle("20/20 Covid-19 Vision");
+        primaryStage.setTitle("20/20 Covid Vision");
         primaryStage.setMaximized(true);
         primaryStage.setScene(sceneHome);
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/application/images/covid2.png")));
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/covid2.png")));
         primaryStage.show();
 
     }
@@ -105,7 +96,7 @@ public class Main extends Application {
     /* methods that create the scenes */
 
     // creates the default homepage where user can login/register
-    public VBox createHomePane() {
+    private VBox createHomePane() {
 
         VBox pane = new VBox();
         pane.setAlignment(Pos.CENTER);
@@ -118,12 +109,12 @@ public class Main extends Application {
         buttonContainer.setAlignment(Pos.CENTER);
 
         // image for logo and welcome
-        Image welcomeImage = new Image(getClass().getResourceAsStream("/application/images/welcome2.png"));
+        Image welcomeImage = new Image(getClass().getResourceAsStream("/images/welcome2.png"));
         ImageView welcome = new ImageView(welcomeImage);
 
         // image to use as register button
-        Image registerImage = new Image(getClass().getResourceAsStream("/application/images/register1.png"));
-        Image registerHovered = new Image(getClass().getResourceAsStream("/application/images/register2.png"));
+        Image registerImage = new Image(getClass().getResourceAsStream("/images/register1.png"));
+        Image registerHovered = new Image(getClass().getResourceAsStream("/images/register2.png"));
         ImageView register = new ImageView(registerImage);
 
         register.setFitHeight(100);
@@ -134,8 +125,8 @@ public class Main extends Application {
         register.setOnMouseExited(e -> {register.setImage(registerImage);});
 
         // image to use as login button
-        Image loginImage = new Image(getClass().getResourceAsStream("/application/images/login1.png"));
-        Image loginHovered = new Image(getClass().getResourceAsStream("/application/images/login2.png"));
+        Image loginImage = new Image(getClass().getResourceAsStream("/images/login1.png"));
+        Image loginHovered = new Image(getClass().getResourceAsStream("/images/login2.png"));
         ImageView login = new ImageView(loginImage);
 
         login.setFitHeight(100);
@@ -154,7 +145,7 @@ public class Main extends Application {
     }
 
     // creates the first register page
-    public HBox createRegisterPane1() {
+    private HBox createRegisterPane1() {
 
         // the overarching hbox container for this page
         HBox pane = new HBox();
@@ -201,8 +192,8 @@ public class Main extends Application {
         tfName.setFont(Font.font(16));
         tfName.setPromptText("Enter first and last name.");
         grid.add(tfName, 1, 0);
-//        String value1 = tfName.getText();
-//        System.out.println(value1);
+        //        String value1 = tfName.getText();
+        //        System.out.println(value1);
 
         TextField tfAddress = new TextField();
         tfAddress.setFont(Font.font(16));
@@ -230,8 +221,8 @@ public class Main extends Application {
         buttonContainer.setSpacing(5);
 
         // image to use as back button
-        Image backImage = new Image(getClass().getResourceAsStream("/application/images/back1.png"));
-        Image backHovered = new Image(getClass().getResourceAsStream("/application/images/back2.png"));
+        Image backImage = new Image(getClass().getResourceAsStream("/images/back1.png"));
+        Image backHovered = new Image(getClass().getResourceAsStream("/images/back2.png"));
         ImageView backButton = new ImageView(backImage);
 
         backButton.setFitHeight(100);
@@ -247,8 +238,8 @@ public class Main extends Application {
         grid.add(lblError, 1, 5);
 
         // image to use as next button
-        Image nextImage = new Image(getClass().getResourceAsStream("/application/images/next1.png"));
-        Image nextHovered = new Image(getClass().getResourceAsStream("/application/images/next2.png"));
+        Image nextImage = new Image(getClass().getResourceAsStream("/images/next1.png"));
+        Image nextHovered = new Image(getClass().getResourceAsStream("/images/next2.png"));
         ImageView nextButton = new ImageView(nextImage);
 
         nextButton.setFitHeight(100);
@@ -292,7 +283,7 @@ public class Main extends Application {
             else
             {
                 int value5 = Integer.parseInt(valZip);
-                loggedInUser = new User(valName, valAddress, valCity, valState, value5);
+                currentSystemUser = new User(valName, valAddress, valCity, valState, value5);
                 lblError.setText("");
                 tfName.clear();
                 tfAddress.clear();
@@ -324,7 +315,7 @@ public class Main extends Application {
     }
 
     // creates the next register page that the first goes to next
-    public HBox createRegisterPane2() {
+    private HBox createRegisterPane2() {
 
         // the overarching hbox container for this page
         HBox pane = new HBox();
@@ -386,8 +377,8 @@ public class Main extends Application {
         //buttonContainer.setSpacing(5);
 
         // image to use as back button
-        Image backImage = new Image(getClass().getResourceAsStream("/application/images/back1.png"));
-        Image backHovered = new Image(getClass().getResourceAsStream("/application/images/back2.png"));
+        Image backImage = new Image(getClass().getResourceAsStream("/images/back1.png"));
+        Image backHovered = new Image(getClass().getResourceAsStream("/images/back2.png"));
         ImageView backButton = new ImageView(backImage);
 
         backButton.setFitHeight(100);
@@ -398,8 +389,8 @@ public class Main extends Application {
         backButton.setOnMouseExited(e -> {backButton.setImage(backImage);});
 
         // image to use as register button
-        Image registerImage = new Image(getClass().getResourceAsStream("/application/images/register1.png"));
-        Image registerHovered = new Image(getClass().getResourceAsStream("/application/images/register2.png"));
+        Image registerImage = new Image(getClass().getResourceAsStream("/images/register1.png"));
+        Image registerHovered = new Image(getClass().getResourceAsStream("/images/register2.png"));
         ImageView registerButton = new ImageView(registerImage);
 
         registerButton.setFitHeight(100);
@@ -410,7 +401,7 @@ public class Main extends Application {
 
             if(validInteractionList(value2) && validChooseStatus(value1))
             {
-                registerUser(loggedInUser, value1, value2);
+                registerUser(currentSystemUser, value1, value2);
                 chooseStatus.setText("Choose status...");
                 tfInteractions.clear();
                 goLoggedIn();
@@ -441,7 +432,7 @@ public class Main extends Application {
     }
 
     // creates the page where user can login
-    public HBox createLoginPane() {
+    private HBox createLoginPane() {
 
         // the overarching hbox container for this page
         HBox pane = new HBox();
@@ -515,8 +506,8 @@ public class Main extends Application {
         buttonContainer.setSpacing(5);
 
         // image to use as back button
-        Image backImage = new Image(getClass().getResourceAsStream("/application/images/back1.png"));
-        Image backHovered = new Image(getClass().getResourceAsStream("/application/images/back2.png"));
+        Image backImage = new Image(getClass().getResourceAsStream("/images/back1.png"));
+        Image backHovered = new Image(getClass().getResourceAsStream("/images/back2.png"));
         ImageView back = new ImageView(backImage);
 
         back.setFitHeight(100);
@@ -527,8 +518,8 @@ public class Main extends Application {
         back.setOnMouseExited(e -> {back.setImage(backImage);});
 
         // image to use as login button
-        Image loginImage = new Image(getClass().getResourceAsStream("/application/images/login1.png"));
-        Image loginHovered = new Image(getClass().getResourceAsStream("/application/images/login2.png"));
+        Image loginImage = new Image(getClass().getResourceAsStream("/images/login1.png"));
+        Image loginHovered = new Image(getClass().getResourceAsStream("/images/login2.png"));
         ImageView loginButton = new ImageView(loginImage);
 
         loginButton.setFitHeight(100);
@@ -547,7 +538,7 @@ public class Main extends Application {
             String valAddress = tfAddress.getText();
             String valCity = tfCity.getText();
             String valState = tfState.getText();
-            User testName = new User(valName);
+
             if(valName.isEmpty() || valAddress.isEmpty() || valCity.isEmpty() ||
                     valState.isEmpty() || tfZip.getText().isEmpty())
             {
@@ -567,8 +558,8 @@ public class Main extends Application {
             {
 
                 int value5 = Integer.parseInt(tfZip.getText());
-                loggedInUser = new User(valName, valAddress, valCity, valState, value5);
-                if(login(loggedInUser))
+                currentSystemUser = new User(valName, valAddress, valCity, valState, value5);
+                if(couldLogin(currentSystemUser))
                 {
                     lblError.setText("");
                     tfName.clear();
@@ -578,6 +569,7 @@ public class Main extends Application {
                     tfZip.clear();
                     tfName.setPromptText("Enter first and last name.");
                     tfZip.setPromptText("Enter zip code.");
+                    login(currentSystemUser); // just added
                     goLoggedIn();
                 }
                 else
@@ -612,7 +604,7 @@ public class Main extends Application {
     }
 
     // creates the page displayed when a user finishes registering/logging in
-    public BorderPane createLoggedInPane() {
+    private BorderPane createLoggedInPane() {
 
         BorderPane pane = new BorderPane();
 
@@ -666,8 +658,8 @@ public class Main extends Application {
         hBoxTop.setPadding(new Insets(20, 0, 0, 0));
 
         // image to use as update button
-        Image updateImage = new Image(getClass().getResourceAsStream("/application/images/update1.png"));
-        Image updateHovered = new Image(getClass().getResourceAsStream("/application/images/update2.png"));
+        Image updateImage = new Image(getClass().getResourceAsStream("/images/update1.png"));
+        Image updateHovered = new Image(getClass().getResourceAsStream("/images/update2.png"));
         ImageView update = new ImageView(updateImage);
 
         update.setFitHeight(100);
@@ -678,8 +670,8 @@ public class Main extends Application {
         update.setOnMouseExited(e -> {update.setImage(updateImage);});
 
         // image to use as check status button
-        Image checkImage = new Image(getClass().getResourceAsStream("/application/images/check2.png"));
-        Image checkHovered = new Image(getClass().getResourceAsStream("/application/images/check1.png"));
+        Image checkImage = new Image(getClass().getResourceAsStream("/images/check2.png"));
+        Image checkHovered = new Image(getClass().getResourceAsStream("/images/check1.png"));
         ImageView check = new ImageView(checkImage);
 
         check.setFitHeight(100);
@@ -698,8 +690,8 @@ public class Main extends Application {
         bottomPane.setAlignment(Pos.CENTER);
 
         // image to use as log out button
-        Image logOutImage = new Image(getClass().getResourceAsStream("/application/images/logout1.png"));
-        Image logOutHovered = new Image(getClass().getResourceAsStream("/application/images/logout2.png"));
+        Image logOutImage = new Image(getClass().getResourceAsStream("/images/logout1.png"));
+        Image logOutHovered = new Image(getClass().getResourceAsStream("/images/logout2.png"));
         ImageView logOut = new ImageView(logOutImage);
 
         logOut.setFitHeight(100);
@@ -720,7 +712,7 @@ public class Main extends Application {
     }
 
     // creates the page for user to update their status
-    public VBox createUpdatePane() {
+    private VBox createUpdatePane() {
 
         // holds section for update status and add interactions
         VBox vBox = new VBox();
@@ -768,8 +760,8 @@ public class Main extends Application {
         tfName.setFont(Font.font(16));
 
         // image to use as submit name button
-        Image submitImage = new Image(getClass().getResourceAsStream("/application/images/submit1.png"));
-        Image submitHovered = new Image(getClass().getResourceAsStream("/application/images/submit2.png"));
+        Image submitImage = new Image(getClass().getResourceAsStream("/images/submit1.png"));
+        Image submitHovered = new Image(getClass().getResourceAsStream("/images/submit2.png"));
         ImageView submit = new ImageView(submitImage);
 
         submit.setFitHeight(100);
@@ -781,7 +773,7 @@ public class Main extends Application {
         submit.setOnMouseClicked(e -> {
             String interaction = tfName.getText();
 
-            expTrcker.addInteractions(loggedInUser, interaction);
+            expTracker.addInteractions(currentSystemUser, interaction);
             //chooseStatus.setText("Choose status...");
             tfName.clear();
         }); // fill in later -- add name to database
@@ -794,8 +786,8 @@ public class Main extends Application {
         pane.setAlignment(Pos.BASELINE_CENTER);
 
         // image to use as done button
-        Image doneImage = new Image(getClass().getResourceAsStream("/application/images/done1.png"));
-        Image doneHovered = new Image(getClass().getResourceAsStream("/application/images/done2.png"));
+        Image doneImage = new Image(getClass().getResourceAsStream("/images/done1.png"));
+        Image doneHovered = new Image(getClass().getResourceAsStream("/images/done2.png"));
         ImageView done = new ImageView(doneImage);
 
         done.setFitHeight(100);
@@ -818,7 +810,7 @@ public class Main extends Application {
     }
 
     // creates the page to display user's exposure status
-    public Pane createCheckPane() {
+    private Pane createCheckPane() {
 
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
@@ -867,8 +859,8 @@ public class Main extends Application {
         pane.add(interactions, 1, 2);
 
         // image to use as done button
-        Image doneImage = new Image(getClass().getResourceAsStream("/application/images/done1.png"));
-        Image doneHovered = new Image(getClass().getResourceAsStream("/application/images/done2.png"));
+        Image doneImage = new Image(getClass().getResourceAsStream("/images/done1.png"));
+        Image doneHovered = new Image(getClass().getResourceAsStream("/images/done2.png"));
         ImageView done = new ImageView(doneImage);
 
         done.setFitHeight(100);
@@ -892,7 +884,7 @@ public class Main extends Application {
     /* methods for buttons to go to a certain scene */
 
     // for the button that sends user back to login/register screen
-    public void goMainMenu() {
+    private void goMainMenu() {
 
         stage.setScene(sceneHome);
         stage.show();
@@ -900,7 +892,7 @@ public class Main extends Application {
     }
 
     // for the button that sends user to first register page
-    public void goRegister() {
+    private void goRegister() {
 
         stage.setScene(sceneRegister1);
         stage.show();
@@ -908,7 +900,7 @@ public class Main extends Application {
     }
 
     // for the button that sends user to next register page
-    public void goNext() {
+    private void goNext() {
 
         stage.setScene(sceneRegister2);
         stage.show();
@@ -916,23 +908,23 @@ public class Main extends Application {
     }
 
     // for the button that sends user to the login page
-    public void goLogin() {
+    private void goLogin() {
 
         stage.setScene(sceneLogin);
         stage.show();
 
     }
 
-    // for the button that logs the user in and sends them to the page to choose update/check status
-    public void goLoggedIn() {
-
+    // for the button that logs the user in and sends them to the page to choose
+    // update/check status
+    private void goLoggedIn() {
         stage.setScene(sceneLoggedIn);
         stage.show();
 
     }
 
     // for the button so user can go update status and interactions
-    public void goUpdateStatus() {
+    private void goUpdateStatus() {
 
         stage.setScene(sceneUpdate);
         stage.show();
@@ -940,9 +932,10 @@ public class Main extends Application {
     }
 
     // lets user check their status and interactions if they are logged in
-    public void goCheckStatus() {
+    private void goCheckStatus() {
 
         stage.setScene(sceneCheck);
+        stage.setMaximized(true);
         stage.show();
 
     }
@@ -950,14 +943,18 @@ public class Main extends Application {
     /**
      * Determines if login information matches a user in the database and if it
      * does, stores user identification information in loggedInUser.
+     * @param currentUser User to check if could login
      *
-     * @param User user to check if could login
-     * @return True if user is registered successfully logged in, False if user is
-     *         not registered and failed to log in
      */
-    public boolean login(User currentUser) {
-        if (expTrcker.loginUser(currentUser)) {
-            loggedInUser = currentUser;
+    private void login(User currentUser) {
+        currentSystemUser = currentUser;
+        checkPane = createCheckPane();
+        sceneCheck = new Scene(checkPane, sceneLoggedIn.getWidth(), sceneLoggedIn.getHeight());
+
+    }
+
+    private boolean couldLogin(User currentUser) {
+        if (expTracker.loginUser(currentUser)) {
             return true;
         } else {
             return false;
@@ -965,16 +962,19 @@ public class Main extends Application {
 
     }
 
-    public void registerUser(User user, String status, String interactions) {
-        expTrcker.registerNewUser(user, status, interactions);
+    private void registerUser(User user, String status, String interactions) {
+        interactions = interactions.replace("\n", "");
+        expTracker.registerNewUser(user, status.toUpperCase(), interactions.toUpperCase());
+        checkPane = createCheckPane();
+        sceneCheck = new Scene(checkPane, sceneLoggedIn.getWidth(), sceneLoggedIn.getHeight());
     }
 
-    public String checkExposureStatus() {
-        return expTrcker.getExposureStatus(loggedInUser);
+    private String checkExposureStatus() {
+        return expTracker.getExposureStatus(currentSystemUser);
     }
 
-    public String checkPastInteractions() {
-        String[] interactionsList = expTrcker.getUserInteractions(loggedInUser);
+    private String checkPastInteractions() {
+        String[] interactionsList = expTracker.getUserInteractions(currentSystemUser);
         String concat = "";
 
         for (int i = 0; i < interactionsList.length; i++) {
@@ -985,16 +985,21 @@ public class Main extends Application {
         return concat;
     }
 
-    public void updateTestStatus(String status) {
-        expTrcker.updateTestStatus(loggedInUser, status);
+    private String checkTestStatus() {
+        return expTracker.getTestStatus(currentSystemUser);
     }
 
-    public void addInteractions(String interactions) {
-        expTrcker.addInteractions(loggedInUser, interactions);
+    private void updateTestStatus(String status) {
+        checkPane = createCheckPane();
+        sceneCheck = new Scene(checkPane, 750, 500);
+        expTracker.updateTestStatus(currentSystemUser, status.toUpperCase());
     }
 
-    public boolean validZipCode(String str)
-    {
+    private void addInteractions(String interactions) {
+        expTracker.addInteractions(currentSystemUser, interactions.toUpperCase());
+    }
+
+    private boolean validZipCode(String str) {
         int length = str.length();
         if (length != 5) {
             return false;
@@ -1006,8 +1011,7 @@ public class Main extends Application {
             // Check if character is
             // not digit from 0-9
             // then return false
-            if (str.charAt(i) <= '0'
-                    && str.charAt(i) >= '9') {
+            if (str.charAt(i) <= '0' && str.charAt(i) >= '9') {
                 return false;
             }
 
@@ -1015,43 +1019,61 @@ public class Main extends Application {
         return true;
     }
 
-    public boolean validChooseStatus(String status) {
+    private boolean validChooseStatus(String status) {
         if (status != "Choose status...") {
             return true;
-        } else return false;
+        } else
+            return false;
     }
 
-    public boolean validInteractionList(String interactionList)
-    {
+    private boolean validInteractionList(String interactionList) {
         int count = 0;
-//		//corner case where no commas in string (removed)
-//		if(interactionList.indexOf(",", count) == -1)
-//			return false;
 
-        while(interactionList.indexOf(",", count) != -1)
-        {
+        while (interactionList.indexOf(",", count) != -1) {
             int currentComma = interactionList.indexOf(",", count);
-            //checks if there is a space between first/last names between commas
-            if(interactionList.indexOf(",", count) <= interactionList.indexOf(" ", count))
+            // checks if there is a space between first/last names between commas
+            if (interactionList.indexOf(",", count) <= interactionList.indexOf(" ", count))
                 return false;
-                //checks spacing
-            else if(interactionList.indexOf(" ", currentComma) != currentComma + 1)
-            {
-                //corner case where comma is end of string
-                if(interactionList.indexOf(" ", currentComma) == -1)
+                // checks spacing
+            else if (interactionList.indexOf(" ", currentComma) != currentComma + 1) {
+                // corner case where comma is end of string
+                if (interactionList.indexOf(" ", currentComma) == -1)
                     return true;
                 return false;
-            }
-            else
+            } else
                 count = currentComma + 2;
 
         }
 
-        //corner case where only one interaction, no spacing
-        if(count < interactionList.length() && interactionList.indexOf(" ", count) == -1)
+        // corner case where only one interaction, no spacing
+        if (count < interactionList.length() && interactionList.indexOf(" ", count) == -1)
             return false;
 
         return true;
+    }
+
+    private boolean validAddress(String address)
+    {
+        //checks first case of address formatting
+        if(!address.contains(" "))
+            return false;
+
+        //splits address to check num string
+        String[] split = address.split(" ");
+        String str = split[0];
+
+        for (int i = 0; i < str.length(); i++) {
+            // Check if character is
+            // not digit
+            // then return false
+
+            if (!Character.isDigit(str.charAt(i))) {
+                System.out.println(str.charAt(i));
+                return false;
+            }
+        }
+        return true;
+
     }
 
 }
