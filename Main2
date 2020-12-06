@@ -90,7 +90,7 @@ public class Main extends Application {
         sceneCheck = new Scene(checkPane, screenBounds.getWidth(), screenBounds.getHeight());
 
         // start out at homepage
-        primaryStage.setTitle("20/20 Covid Vision");
+        primaryStage.setTitle("20/20 Covid-19 Vision");
         primaryStage.setMaximized(true);
         primaryStage.setScene(sceneHome);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/covid2.png")));
