@@ -55,6 +55,8 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
+		System.out.println(Main.class.getResource("/").getPath());
+		
 		// set stage
 		stage = primaryStage;
 
@@ -76,7 +78,7 @@ public class Main extends Application {
 		sceneLogin = new Scene(loginPane, screenBounds.getWidth(), screenBounds.getHeight());
 		sceneLoggedIn = new Scene(loggedInPane, screenBounds.getWidth(), screenBounds.getHeight());
 		sceneUpdate = new Scene(updatePane, screenBounds.getWidth(), screenBounds.getHeight());
-		sceneCheck = new Scene(checkPane, screenBounds.getWidth(), screenBounds.getHeight());
+		//sceneCheck = new Scene(checkPane, screenBounds.getWidth(), screenBounds.getHeight());
 
 		// start out at homepage
 		primaryStage.setTitle("20/20 Covid Vision");
@@ -281,7 +283,7 @@ public class Main extends Application {
 		    else
 		    {
 			int value5 = Integer.parseInt(valZip);
-			loggedInUser = new User(valName, valAddress, valCity, valState, value5);
+	currentSystemUser = new User(valName, valAddress, valCity, valState, value5);
 			lblError.setText("");
 			tfName.clear();
 			tfAddress.clear();
@@ -399,7 +401,7 @@ public class Main extends Application {
 
 		    if(validInteractionList(value2) && validChooseStatus(value1))
 		    {
-			registerUser(loggedInUser, value1, value2);
+			registerUser(currentSystemUser, value1, value2);
 			chooseStatus.setText("Choose status...");
 			tfInteractions.clear();
 			goLoggedIn();
@@ -536,7 +538,7 @@ public class Main extends Application {
 		    String valAddress = tfAddress.getText();
 		    String valCity = tfCity.getText();
 		    String valState = tfState.getText();
-		    User testName = new User(valName);
+		    
 		    if(valName.isEmpty() || valAddress.isEmpty() || valCity.isEmpty() ||
 			    valState.isEmpty() || tfZip.getText().isEmpty())
 		    {
@@ -556,8 +558,8 @@ public class Main extends Application {
 		    {
 
 			int value5 = Integer.parseInt(tfZip.getText());
-			loggedInUser = new User(valName, valAddress, valCity, valState, value5);
-			if(login(loggedInUser))
+			currentSystemUser = new User(valName, valAddress, valCity, valState, value5);
+			if(couldLogin(currentSystemUser))
 			{
 			    lblError.setText("");
 			    tfName.clear();
@@ -770,7 +772,7 @@ public class Main extends Application {
 		submit.setOnMouseClicked(e -> {
 		    String interaction = tfName.getText();
 
-		    expTrcker.addInteractions(loggedInUser, interaction);
+		    expTracker.addInteractions(currentSystemUser, interaction);
 		    //chooseStatus.setText("Choose status...");
 		    tfName.clear();
 		}); // fill in later -- add name to database
