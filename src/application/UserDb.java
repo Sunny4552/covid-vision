@@ -253,7 +253,7 @@ public class UserDb {
 		// get exposure status line number
 		int exposureStatLine = getExposureStatLineNum(user);
 
-		// retireve current exposure status
+		// retrieve current exposure status
 		String currentLine = databaseLines.get(exposureStatLine);
 
 		// if nothing is written on the line
@@ -588,7 +588,7 @@ public class UserDb {
 	public int findRegisteredUser(User user) {
 		int lineNum = 0;
 
-		// go through deach record in database
+		// go through each record in database
 		while (lineNum < databaseLines.size()) {
 
 			// retrieve the line at lineNum
@@ -615,7 +615,7 @@ public class UserDb {
 	 */
 	public ArrayList<Integer> findUnregisteredUser(User user) {
 
-		// Retrieve all line nums that store recordss that has interacted with the user
+		// Retrieve all line nums that store records that has interacted with the user
 		ArrayList<Integer> recordLines = new ArrayList<>();
 
 		// go through records in database

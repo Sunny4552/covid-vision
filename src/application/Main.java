@@ -257,6 +257,14 @@ public class Main extends Application {
 		tfZip.setPromptText("Enter zip code.");
 		grid.add(tfZip, 1, 4);
 
+		// a label that will appear accordingly to whichever error or empty text field occurs
+		Label lblError = new Label("");
+		Label focus = new Label("");
+		lblError.setFont(Font.font(16));
+		GridPane.setHalignment(lblError, HPos.LEFT);
+		grid.add(lblError, 1, 5);
+		grid.add(focus, 0, 5);
+
 		// an HBox to contain the back and next buttons, displayed below the labels/text fields
 		HBox buttonContainer = new HBox();
 		buttonContainer.setAlignment(Pos.TOP_RIGHT);
@@ -270,6 +278,14 @@ public class Main extends Application {
 		backButton.setFitHeight(100);
 		backButton.setPreserveRatio(true);
 		backButton.setOnMouseClicked(e -> { // go to home page when back button is clicked
+			lblError.setText("");
+			tfName.clear();
+			tfAddress.clear();
+			tfCity.clear();
+			tfState.clear();
+			tfZip.clear();
+			tfName.setPromptText("Enter first and last name.");
+			tfZip.setPromptText("Enter zip code.");
 			goMainMenu();
 		});
 
@@ -279,14 +295,6 @@ public class Main extends Application {
 		backButton.setOnMouseExited(e -> { // return to original back button image when not hovered
 			backButton.setImage(backImage);
 		});
-
-		// a label that will appear accordingly to whichever error or empty text field occurs
-		Label lblError = new Label("");
-		Label focus = new Label("");
-		lblError.setFont(Font.font(16));
-		GridPane.setHalignment(lblError, HPos.LEFT);
-		grid.add(lblError, 1, 5);
-		grid.add(focus, 0, 5);
 
 		// images to use as the next button (continues registration process)
 		Image nextImage = new Image(getClass().getResourceAsStream("/images/next1.png"));
@@ -419,9 +427,6 @@ public class Main extends Application {
 		grid.setHgap(10);
 		grid.setVgap(10);
 
-		Label focus = new Label("");
-		grid.add(focus, 2, 0);
-
 		/* labels */
 
 		// the label for the menu where the user can choose their COVID-19 test status
@@ -472,6 +477,14 @@ public class Main extends Application {
 		tfInteractions.setPromptText("FirstName LastName, FirstName2 LastName2, ...");
 		grid.add(tfInteractions, 1, 1);
 
+		// a label that will appear accordingly to whichever error occurs
+		Label lblError = new Label("");
+		Label focus = new Label("");
+		lblError.setFont(Font.font(16));
+		grid.add(lblError, 1, 2);
+		GridPane.setHalignment(lblError, HPos.LEFT);
+		grid.add(focus, 0, 0);
+
 		// an HBox to contain the back and register buttons
 		HBox buttonContainer = new HBox();
 		buttonContainer.setAlignment(Pos.TOP_RIGHT);
@@ -484,6 +497,9 @@ public class Main extends Application {
 		backButton.setFitHeight(100);
 		backButton.setPreserveRatio(true);
 		backButton.setOnMouseClicked(e -> { // when back button is clicked, go back to first registration page
+			lblError.setText("");
+			chooseStatus.setText("Choose status...");
+			tfInteractions.clear();
 			goRegister();
 		});
 
@@ -527,8 +543,7 @@ public class Main extends Application {
 
 			} else { // user did not choose a status, tell them to choose one
 
-				tfInteractions.clear();
-				tfInteractions.setPromptText("PLEASE CHOOSE A STATUS");
+				lblError.setText("PLEASE CHOOSE A STATUS");
 
 			}
 
@@ -638,6 +653,14 @@ public class Main extends Application {
 		tfZip.setPromptText("Enter zip code.");
 		grid.add(tfZip, 1, 4);
 
+		// a label for a error that will appear accordingly for an error/empty text field when trying to log in
+		Label lblError = new Label("");
+		lblError.setFont(Font.font(16));
+		GridPane.setHalignment(lblError, HPos.LEFT);
+		grid.add(lblError, 1, 5);
+		Label focus = new Label("");
+		grid.add(focus, 0, 5);
+
 		// an HBox to contain the back and login buttons
 		HBox buttonContainer = new HBox();
 		buttonContainer.setAlignment(Pos.TOP_RIGHT);
@@ -651,6 +674,14 @@ public class Main extends Application {
 		back.setFitHeight(100);
 		back.setPreserveRatio(true);
 		back.setOnMouseClicked(e -> { // when back button is clicked, return to home page
+			lblError.setText("");
+			tfName.clear();
+			tfAddress.clear();
+			tfCity.clear();
+			tfState.clear();
+			tfZip.clear();
+			tfName.setPromptText("Enter first and last name.");
+			tfZip.setPromptText("Enter zip code.");
 			goMainMenu();
 		});
 
@@ -675,14 +706,6 @@ public class Main extends Application {
 		loginButton.setOnMouseExited(e -> { // return to original login button when not hovered
 			loginButton.setImage(loginImage);
 		});
-
-		// a label for a error that will appear accordingly for an error/empty text field when trying to log in
-		Label lblError = new Label("");
-		lblError.setFont(Font.font(16));
-		GridPane.setHalignment(lblError, HPos.LEFT);
-		grid.add(lblError, 1, 5);
-		Label focus = new Label("");
-		grid.add(focus, 0, 5);
 
 		// when login button is clicked...
 		loginButton.setOnMouseClicked(e -> {

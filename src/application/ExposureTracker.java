@@ -229,9 +229,6 @@ public class ExposureTracker {
 		// read exposure status of user from database
 		String exp = database.readExposureStat(user);
 
-		// read test status of user from database
-		String testStat = database.readTestStatus(user);
-
 		if (!exp.equals((""))) {
 			// convert exposure status to word form
 			int exposure = Integer.parseInt(exp);
